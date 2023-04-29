@@ -4,6 +4,25 @@ import Head from "next/head";
 import { api } from "~/utils/api";
 import { SignIn, SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+
+const PostCreator = () => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { user } = useUser();
+  if (!user) return null;
+
+  return (
+    <div className="m-2 flex">
+      <Avatar>
+        <AvatarImage src={user.profileImageUrl} alt="Profile image" />
+        <AvatarFallback>???</AvatarFallback>
+      </Avatar>
+
+      <Input placeholder="Seethe!" type="text" />
+    </div>
+  );
+};
 
 const Home: NextPage = () => {
   const user = useUser();
@@ -17,19 +36,10 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <div >
-          <h1 >
-            seeter
-          </h1>
-          <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
-          <div>
-            {!user.isSignedIn && <SignInButton />}
-            {user.isSignedIn && (
-              <SignOutButton>
-                <Button variant={"secondary"}>Sign out!</Button>
-              </SignOutButton>
-            )}
-          </div>
+        <div>
+          <h1>seeter</h1>
+
+          <PostCreator />
           <div>
             <h2>Posts</h2>
             <div>
@@ -38,6 +48,15 @@ const Home: NextPage = () => {
               ))}
             </div>
           </div>
+        </div>
+        <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
+        <div>
+          {!user.isSignedIn && <SignInButton />}
+          {user.isSignedIn && (
+            <SignOutButton>
+              <Button variant={"secondary"}>Sign out!</Button>
+            </SignOutButton>
+          )}
         </div>
       </main>
     </>
