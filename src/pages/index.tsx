@@ -38,11 +38,11 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <div className="bg-violet-50 p-2">
+        <div className="p-2">
           <h1 className="tracking-tight">Seeter</h1>
 
           <PostCreator />
-          <div className="bg-slate-100">
+          <div className="">
             <h2>Posts</h2>
             <div>
               {isLoading && <LoadingSpinner />}
