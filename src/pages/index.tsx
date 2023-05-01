@@ -54,6 +54,7 @@ function PostCreator() {
         <div className="flex justify-between">
           <div className="flex gap-2">{/* Icons can be put here */}</div>
           <Button
+            disabled={input === ""}
             className="max-w-[72px] rounded-full"
             variant={"default"}
             onClick={() => mutate({ content: input })}
