@@ -26,14 +26,13 @@ function PostCreator() {
       await ctx.posts.getAll.invalidate();
     },
     onError: (e) => {
-      toast({ title: "Error" });
-      const errorMessage = e.data?.zodError?.fieldErrors.content;
-      if (errorMessage && errorMessage[0]) {
-        if (typeof errorMessage === "string") toast({ title: errorMessage });
-        else {
-          toast({ title: errorMessage[0] });
-        }
+      const errorMessage = e.data?.zodError?.fieldErrors?.content;
+
+      if (errorMessage) {
+        return toast({ title: "Error", description: errorMessage[0] });
       }
+
+      return toast({ title: "Error", description: e.message });
     },
   });
 
@@ -84,7 +83,7 @@ const Home: NextPage = () => {
         <div className="p-2">
           <h1 className="mb-4 tracking-tight">Seeter</h1>
           <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
-          <div className="my-12 flex flex-col md:flex-row gap-8  px-4 md:justify-around">
+          <div className="my-12 flex flex-col gap-8 px-4  md:flex-row md:justify-around">
             <div className="h-min rounded-xl bg-slate-200 p-8">
               {!userSignedIn && (
                 <div className="flex h-min min-w-min max-w-sm flex-col gap-8">
@@ -113,7 +112,7 @@ const Home: NextPage = () => {
                 </div>
               )}
             </div>
-            <div className="w-full lg:max-w-[80rem] my-8">
+            <div className="my-8 w-full lg:max-w-[80rem]">
               <PostCreator />
 
               {postsLoading && <LoadingSpinner />}
