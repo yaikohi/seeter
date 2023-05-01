@@ -1,7 +1,7 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 
-import { api } from "~/utils/api";
+import { type RouterOutputs, api } from "~/utils/api";
 import { SignIn, SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -10,10 +10,26 @@ import { LoadingSpinner } from "~/components/ui/loading-spinner";
 import React from "react";
 import { intlFormatDistance } from "date-fns";
 import type { Post } from "@prisma/client";
+import { useToast } from "~/components/ui/use-toast";
+import { LoadingPage } from "~/components/loading-page";
 
 const PostCreator = () => {
-  const { user } = useUser();
-  const { mutate } = api.posts.create.useMutation();
+  const { user, isLoaded: userLoaded } = useUser();
+  const { toast } = useToast();
+  const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
+    onSuccess: () => {
+      toast({ title: "Seethed!" });
+
+      setInput("");
+    },
+    onError: (e) => {
+      toast({ title: "Error" });
+      const errorMessage = e.data?.zodError?.fieldErrors.content;
+      if (errorMessage && errorMessage[0]) {
+        toast({ title: errorMessage[0] });
+      }
+    },
+  });
 
   const [input, setInput] = React.useState("");
 
@@ -56,9 +72,11 @@ const PostCreator = () => {
 };
 
 const Home: NextPage = () => {
-  const { user, isSignedIn: userSignedIn } = useUser();
+  const { user, isSignedIn: userSignedIn, isLoaded: userLoaded } = useUser();
   const { data: posts, isLoading: postsLoading } = api.posts.getAll.useQuery();
-  console.log(posts);
+
+  if (postsLoading && !userLoaded) return <div />;
+  if (postsLoading) return <LoadingPage />;
   return (
     <>
       <Head>
@@ -72,67 +90,66 @@ const Home: NextPage = () => {
           <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
           <div>
             {!userSignedIn && (
-              <SignInButton>
-                <Button variant={"default"}>Sign in!</Button>
-              </SignInButton>
+              <div className="my-8">
+                <div>
+                  <h2>Hello stranger!</h2>
+                  <p>Please login with github to seethe!</p>
+                </div>
+
+                <SignInButton>
+                  <Button variant={"default"}>Sign in!</Button>
+                </SignInButton>
+              </div>
             )}
             {userSignedIn && (
-              <SignOutButton>
-                <Button variant={"secondary"}>Sign out!</Button>
-              </SignOutButton>
+              <div className="my-8">
+                <h2>Hello {user.username}!</h2>
+                <p>Welcome to seeter</p>
+
+                <SignOutButton>
+                  <Button variant={"secondary"}>Sign out!</Button>
+                </SignOutButton>
+              </div>
             )}
           </div>
           <div className="mx-auto max-w-lg">
             <PostCreator />
-            {user?.username && (
-              <Posts
-                posts={posts}
-                postsLoading={postsLoading}
-                username={user.username}
-              />
-            )}
+
+            {postsLoading && <LoadingSpinner />}
+            {!postsLoading && posts && <Posts posts={posts} />}
           </div>
         </div>
       </main>
     </>
   );
 };
+export type PostGetAllOutput = RouterOutputs["posts"]["getAll"];
 
-const Posts = ({
-  username,
-  posts,
-  postsLoading,
-}: {
-  username: string;
-  posts: Post[] | undefined;
-  postsLoading: boolean;
-}) => {
+const Posts = ({ posts }: { posts: PostGetAllOutput }) => {
   return (
     <div className="rounded-xl p-2">
       <h2>Posts</h2>
       <div className="flex flex-col gap-2">
-        {!posts && postsLoading && <LoadingSpinner />}
-        {!postsLoading &&
-          posts &&
-          posts?.map((post) => {
-            return (
-              <div
-                className="flex flex-col rounded-xl bg-muted p-2"
-                key={post.id}
-              >
-                <div className="flex place-items-center gap-2">
-                  <p className="font-medium">{`@${username}`}</p>
-                  <span className="font-light">·</span>
-                  <span className="font-light">
-                    {intlFormatDistance(post.createdAt, new Date())}
-                  </span>
-                </div>
-                <div>
-                  <p>{post.content}</p>
-                </div>
+        {posts?.map((post) => {
+          return (
+            <div
+              className="flex flex-col rounded-xl bg-muted p-2"
+              key={post.id}
+            >
+              <div className="flex place-items-center gap-2">
+                {/* GitHub enforces usernames so it cannot / shouldn't ever be be `null` or `undefined`*/}
+                <p className="font-medium">{`@${post.username as string}`}</p>
+                <span className="font-light">·</span>
+                <span className="font-light">
+                  {intlFormatDistance(post.createdAt, new Date())}
+                </span>
               </div>
-            );
-          })}
+              <div>
+                <p>{post.content}</p>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
