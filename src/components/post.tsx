@@ -1,7 +1,7 @@
 import type { ComponentProps } from "react";
 import type { RouterOutputs } from "~/utils/api";
 import { intlFormatDistance } from "date-fns";
-
+import { Fade } from "react-awesome-reveal";
 export type PostGetAllOutput = RouterOutputs["posts"]["getAll"];
 
 export function Posts({ posts }: { posts: PostGetAllOutput }) {
@@ -12,7 +12,9 @@ export function Posts({ posts }: { posts: PostGetAllOutput }) {
         {posts?.map((post) => {
           return (
             <div key={post.id}>
-              <Post post={post} />
+              <Fade damping={20}>
+                <Post post={post} />
+              </Fade>
             </div>
           );
         })}
@@ -30,7 +32,7 @@ export function Post(props: PostProps) {
     post: { username, createdAt, content },
   } = props;
   return (
-    <div className="flex flex-col rounded-xl bg-muted p-2">
+    <div className="flex transition-opacity duration-200 delay-200  opacity-100 flex-col rounded-xl bg-muted p-2">
       <div className="flex place-items-center gap-2">
         <p className="font-medium">{`@${username as string}`}</p>
         <span className="font-light">·</span>

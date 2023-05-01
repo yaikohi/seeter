@@ -91,7 +91,7 @@ const Home: NextPage = () => {
           <h1 className="mb-4 tracking-tight">Seeter</h1>
           <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
           <div className="my-12 flex gap-8  px-4">
-            <div className="rounded-xl bg-slate-200 p-8">
+            <div className="rounded-xl bg-slate-200 p-8 h-min">
               {!userSignedIn && (
                 <div className="my-8 min-w-max max-w-xs">
                   <div className="">
@@ -105,7 +105,7 @@ const Home: NextPage = () => {
                 </div>
               )}
               {userSignedIn && (
-                <div className="my-8 min-w-max max-w-xs">
+                <div className="my-8 min-w-max max-w-xs h-min">
                   <h2>Hello {user.username}!</h2>
                   <p>Welcome to seeter</p>
 
