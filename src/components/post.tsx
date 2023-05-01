@@ -10,7 +10,11 @@ export function Posts({ posts }: { posts: PostGetAllOutput }) {
       <h2>Posts</h2>
       <div className="flex flex-col gap-2">
         {posts?.map((post) => {
-          return <Post post={post} key={post.id} />;
+          return (
+            <div key={post.id}>
+              <Post post={post} />
+            </div>
+          );
         })}
       </div>
     </div>
