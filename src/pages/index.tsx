@@ -40,10 +40,10 @@ function PostCreator() {
   if (!user) return null;
 
   return (
-    <div className="m-2 flex gap-4">
+    <div className="mx-2 flex gap-4">
       <UserProfile imgUrl={user.profileImageUrl} />
 
-      <div className="flex flex-grow flex-col gap-2">
+      <div className="flex max-w-[50rem] flex-grow flex-col gap-2">
         <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -53,13 +53,7 @@ function PostCreator() {
           disabled={isPosting}
         />
         <div className="flex justify-between">
-          <div className="flex gap-2">
-            {/* Icons can be put here */}
-            {/* <div>icon</div> */}
-            {/* <div>icon</div> */}
-            {/* <div>icon</div> */}
-            {/* <div>icon</div> */}
-          </div>
+          <div className="flex gap-2">{/* Icons can be put here */}</div>
           <Button
             className="max-w-[72px] rounded-full"
             variant={"default"}
@@ -90,32 +84,36 @@ const Home: NextPage = () => {
         <div className="p-2">
           <h1 className="mb-4 tracking-tight">Seeter</h1>
           <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
-          <div className="my-12 flex gap-8  px-4">
-            <div className="rounded-xl bg-slate-200 p-8 h-min">
+          <div className="my-12 flex flex-col md:flex-row gap-8  px-4 md:justify-around">
+            <div className="h-min rounded-xl bg-slate-200 p-8">
               {!userSignedIn && (
-                <div className="my-8 min-w-max max-w-xs">
+                <div className="flex h-min min-w-min max-w-sm flex-col gap-8">
                   <div className="">
                     <h2>Hello stranger!</h2>
                     <p>Please login with github to seethe!</p>
                   </div>
 
                   <SignInButton>
-                    <Button variant={"default"}>Sign in!</Button>
+                    <Button className="" variant={"default"}>
+                      Sign in!
+                    </Button>
                   </SignInButton>
                 </div>
               )}
               {userSignedIn && (
-                <div className="my-8 min-w-max max-w-xs h-min">
+                <div className=" h-min min-w-max max-w-sm">
                   <h2>Hello {user.username}!</h2>
                   <p>Welcome to seeter</p>
 
                   <SignOutButton>
-                    <Button variant={"secondary"}>Sign out!</Button>
+                    <Button className="" variant={"secondary"}>
+                      Sign out!
+                    </Button>
                   </SignOutButton>
                 </div>
               )}
             </div>
-            <div className="w-full">
+            <div className="w-full lg:max-w-[80rem] my-8">
               <PostCreator />
 
               {postsLoading && <LoadingSpinner />}

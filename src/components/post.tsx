@@ -6,7 +6,7 @@ export type PostGetAllOutput = RouterOutputs["posts"]["getAll"];
 
 export function Posts({ posts }: { posts: PostGetAllOutput }) {
   return (
-    <div className="rounded-xl p-2">
+    <div className="flex flex-col gap-2 rounded-xl p-2">
       <h2>Posts</h2>
       <div className="flex flex-col gap-2">
         {posts?.map((post) => {
@@ -32,16 +32,20 @@ export function Post(props: PostProps) {
     post: { username, createdAt, content },
   } = props;
   return (
-    <div className="flex transition-opacity duration-200 delay-200  opacity-100 flex-col rounded-xl bg-muted p-2">
-      <div className="flex place-items-center gap-2">
-        <p className="font-medium">{`@${username as string}`}</p>
+    <div className="flex flex-col rounded-xl bg-muted p-2 opacity-100 transition-opacity duration-200 delay-200">
+      <div className="flex place-items-center gap-2 px-2 py-1 text-sm ">
+        <a
+          target="_blank"
+          href={`https://github.com/${username as string}`}
+          className="text-base font-bold tracking-tight hover:underline"
+        >{`@${username as string}`}</a>
         <span className="font-light">·</span>
         <span className="font-light">
           {intlFormatDistance(createdAt, new Date())}
         </span>
       </div>
       <div>
-        <p>{content}</p>
+        <p className="ml-4">{content}</p>
       </div>
     </div>
   );
