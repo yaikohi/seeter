@@ -17,10 +17,11 @@ function PostCreator() {
   const { toast } = useToast();
   const [input, setInput] = React.useState("");
 
+  const ctx = api.useContext();
+
   const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
     onSuccess: async () => {
       toast({ title: "Seethed!" });
-      const ctx = api.useContext();
       setInput("");
       await ctx.posts.getAll.invalidate();
     },
