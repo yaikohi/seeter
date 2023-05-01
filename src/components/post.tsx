@@ -8,7 +8,7 @@ export function Posts({ posts }: { posts: PostGetAllOutput }) {
   return (
     <div className="flex flex-col gap-2 rounded-xl p-2">
       <h2>Posts</h2>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 xl:max-w-[60rem]">
         {posts?.map((post) => {
           return (
             <div key={post.id}>
@@ -45,7 +45,7 @@ export function Post(props: PostProps) {
         </span>
       </div>
       <div>
-        <p className="ml-4">{content}</p>
+        <p className="ml-4 break-words">{content}</p>
       </div>
     </div>
   );

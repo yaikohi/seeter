@@ -48,13 +48,18 @@ function PostCreator() {
           onChange={(e) => setInput(e.target.value)}
           placeholder="What's up?"
           type="text"
-          className=""
           disabled={isPosting}
         />
+
         <div className="flex justify-between">
+          {input.length > 100 && (
+            <p className="text-sm text-red-500">
+              Too many characters (over 100)!
+            </p>
+          )}
           <div className="flex gap-2">{/* Icons can be put here */}</div>
           <Button
-            disabled={input === ""}
+            disabled={input === "" || input.length > 100}
             className="max-w-[72px] rounded-full"
             variant={"default"}
             onClick={() => mutate({ content: input })}
@@ -76,7 +81,7 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>seeter</title>
+        <title>Seeter</title>
         <meta name="description" content="twitter but seeter" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -84,7 +89,7 @@ const Home: NextPage = () => {
         <div className="p-2">
           <h1 className="mb-4 tracking-tight">Seeter</h1>
           <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
-          <div className="my-12 flex flex-col gap-8 px-4  md:flex-row md:justify-around">
+          <div className="my-12 flex max-w-6xl flex-col gap-8 px-4 xl:mx-auto xl:flex-row">
             <div className="h-min rounded-xl bg-slate-200 p-8">
               {!userSignedIn && (
                 <div className="flex h-min min-w-min max-w-sm flex-col gap-8">
@@ -113,7 +118,7 @@ const Home: NextPage = () => {
                 </div>
               )}
             </div>
-            <div className="my-8 w-full lg:max-w-[80rem]">
+            <div className="my-8 w-full xl:mx-auto xl:my-0">
               <PostCreator />
 
               {postsLoading && <LoadingSpinner />}
