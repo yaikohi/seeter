@@ -9,8 +9,9 @@ import { LoadingSpinner } from "~/components/ui/loading-spinner";
 import React from "react";
 import { useToast } from "~/components/ui/use-toast";
 import { LoadingPage } from "~/components/loading-page";
-import { Posts } from "~/components/post";
+import { Feed } from "~/components/post";
 import { UserProfile } from "~/components/user-profile";
+import { BaseLayout } from "~/components/base-layout";
 
 function PostCreator() {
   const { user } = useUser();
@@ -85,48 +86,46 @@ const Home: NextPage = () => {
         <meta name="description" content="twitter but seeter" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
-        <div className="p-2">
-          <h1 className="mb-4 tracking-tight">Seeter</h1>
-          <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
-          <div className="my-12 flex max-w-6xl flex-col gap-8 px-4 xl:mx-auto xl:flex-row">
-            <div className="h-min rounded-xl bg-slate-200 p-8">
-              {!userSignedIn && (
-                <div className="flex h-min min-w-min max-w-sm flex-col gap-8">
-                  <div className="">
-                    <h2>Hello stranger!</h2>
-                    <p>Please login with github to seethe!</p>
-                  </div>
-
-                  <SignInButton>
-                    <Button className="" variant={"default"}>
-                      Sign in!
-                    </Button>
-                  </SignInButton>
+      <BaseLayout>
+        {/* <h1 className="mb-4 tracking-tight">Seeter</h1> */}
+        <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
+        <div className="my-12 flex max-w-6xl flex-col gap-8 px-4 xl:mx-auto xl:flex-row">
+          <div className="h-min rounded-xl p-8">
+            {!userSignedIn && (
+              <div className="flex h-min min-w-min max-w-sm flex-col gap-8">
+                <div className="">
+                  <h2>Hello stranger!</h2>
+                  <p>Please login with github to seethe!</p>
                 </div>
-              )}
-              {userSignedIn && (
-                <div className=" h-min min-w-max max-w-sm">
-                  <h2>Hello {user.username}!</h2>
-                  <p>Welcome to seeter</p>
 
-                  <SignOutButton>
-                    <Button className="" variant={"secondary"}>
-                      Sign out!
-                    </Button>
-                  </SignOutButton>
-                </div>
-              )}
-            </div>
-            <div className="my-8 w-full xl:mx-auto xl:my-0">
-              <PostCreator />
+                <SignInButton>
+                  <Button className="" variant={"default"}>
+                    Sign in!
+                  </Button>
+                </SignInButton>
+              </div>
+            )}
+            {userSignedIn && (
+              <div className=" h-min min-w-max max-w-sm">
+                <h2>Hello {user.username}!</h2>
+                <p>Welcome to seeter</p>
 
-              {postsLoading && <LoadingSpinner />}
-              {!postsLoading && posts && <Posts posts={posts} />}
-            </div>
+                <SignOutButton>
+                  <Button className="" variant={"secondary"}>
+                    Sign out!
+                  </Button>
+                </SignOutButton>
+              </div>
+            )}
+          </div>
+          <div className="my-8 w-full xl:mx-auto xl:my-0">
+            <PostCreator />
+
+            {postsLoading && <LoadingSpinner />}
+            {!postsLoading && posts && <Feed posts={posts} />}
           </div>
         </div>
-      </main>
+      </BaseLayout>
     </>
   );
 };
