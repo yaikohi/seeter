@@ -45,10 +45,10 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <BaseLayout>
-        <div className="w-full">
+        <div className="flex w-full flex-col gap-20">
           <div className="h-48">
-            <div className="flex h-full place-items-end bg-secondary">
-              <div className="flex place-items-center gap-8">
+            <div className="flex h-full place-items-end">
+              <div className="flex w-full place-items-center gap-8 px-2">
                 <Image
                   src={user.profileImageUrl}
                   alt={`${
@@ -58,16 +58,17 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
                   width={8 * 12}
                   className="max-h-[96px] max-w-[96px] rounded-full"
                 />
-                <div className="flex flex-col">
-                  <div className="flex flex-col border-b-2 border-border ">
-                    <h1 className="py-4 text-xl font-bold tracking-normal">
+                <div className="flex flex-col ">
+                  <div className="flex flex-col">
+                    <h1 className="text-xl font-bold tracking-normal border-b-2 border-border">
                       {"@"}
                       {user.username}
                     </h1>
                   </div>
-                  <div className="flex gap-4 py-4">
-                    <Link href={`https://github.com/${username}`}>
-                      <Github />
+                  <div className="flex gap-4 pt-1">
+                    <Link href={`https://github.com/${username}`} className="flex gap-2 place-items-center hover:underline">
+                      <Github className="stroke-foreground/50" />
+                      {/* <p className=""> Github</p> */}
                     </Link>
                   </div>
                 </div>

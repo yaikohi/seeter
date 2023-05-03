@@ -2,7 +2,6 @@ import { SignIn, SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import type { PropsWithChildren } from "react";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { ArrowBigRight } from "lucide-react";
 
 export const BaseLayout = (props: PropsWithChildren<object>) => {
   const { user, isSignedIn: userSignedIn } = useUser();
