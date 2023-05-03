@@ -1,21 +1,123 @@
-import { type NextPage } from "next";
+import {
+  type GetStaticPropsContext,
+  type GetStaticProps,
+  type NextPage,
+  type GetStaticPaths,
+} from "next";
 import Head from "next/head";
 import React from "react";
 import { BaseLayout } from "~/components/base-layout";
+import { LoadingPage } from "~/components/loading-page";
+import { appRouter } from "~/server/api/root";
+import { api } from "~/utils/api";
 
-const ProfilePage: NextPage = () => {
+const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
+  const { data: user, isLoading: userLoading } =
+    api.profiles.getUserByUsername.useQuery({
+      username,
+    });
+
+  if (userLoading) {
+    console.log("\n\nLoading state hit for user!\n\n");
+    return <LoadingPage />;
+  }
+
+  if (!user) return <div>404</div>;
+
+  const { data: postsByUser, isLoading: postsLoading } =
+    api.posts.getPostsById.useQuery({ userId: user.id });
+
+  if (postsLoading) {
+    console.log("\n\nLoading state hit for postsByUser!\n\n");
+    return <LoadingPage />;
+  }
+
+  if (!postsByUser) return <div>404</div>;
+
   return (
     <>
       <Head>
-        <title>Seeter</title>
-        <meta name="description" content="twitter but seeter" />
+        <title>
+          {user.username}
+          {"'"}s profile
+        </title>
+        <meta name="description" content="user seeter profile" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <BaseLayout>
-        <h1>Profile</h1>
+        <div className="w-full">
+          <div className="h-48">
+            <div className="flex h-full place-items-end bg-secondary">
+              <div className="flex place-items-center gap-8">
+                <Image
+                  src={user.profileImageUrl}
+                  alt={`${
+                    user.username ? user.username : username ?? ""
+                  }'s profile picture`}
+                  height={8 * 12}
+                  width={8 * 12}
+                  className="max-h-[96px] max-w-[96px] rounded-full"
+                />
+                <div className="flex flex-col">
+                  <div className="flex flex-col border-b-2 border-border ">
+                    <h1 className="py-4 text-xl font-bold tracking-normal">
+                      {"@"}
+                      {user.username}
+                    </h1>
+                  </div>
+                  <div className="flex gap-4 py-4">
+                    <Link href={`https://github.com/${username}`}>
+                      <Github />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <Feed posts={postsByUser} />
+          </div>
+        </div>
       </BaseLayout>
     </>
   );
+};
+
+import { createServerSideHelpers } from "@trpc/react-query/server";
+import superjson from "superjson";
+import { prisma } from "~/server/db";
+import Image from "next/image";
+import Link from "next/link";
+import { Github } from "lucide-react";
+import { Feed } from "~/components/post";
+
+export const getStaticProps: GetStaticProps = async (
+  context: GetStaticPropsContext
+) => {
+  const ssg = createServerSideHelpers({
+    router: appRouter,
+    ctx: { prisma, userId: null },
+    transformer: superjson,
+  });
+
+  const slug = context.params?.slug;
+
+  if (typeof slug !== "string") throw new Error("No slug? why");
+
+  const usernameFromSlug = slug.replace("@", "");
+
+  await ssg.profiles.getUserByUsername.prefetch({ username: usernameFromSlug });
+
+  return {
+    props: {
+      trpcState: ssg.dehydrate(),
+      username: usernameFromSlug,
+    },
+  };
+};
+
+export const getStaticPaths: GetStaticPaths = () => {
+  return { paths: [], fallback: "blocking" };
 };
 
 export default ProfilePage;

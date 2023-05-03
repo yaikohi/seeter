@@ -7,21 +7,8 @@ import { Redis } from "@upstash/redis";
 import { TRPCError } from "@trpc/server";
 
 // import { type Post } from "@prisma/client";
-// import { type User } from "@clerk/nextjs/dist/api";
 // import { TRPCError } from "@trpc/server";
 // import { RouterOutputs } from "~/utils/api";
-
-// const filterUserForClient = (user: User) => {
-//   return {
-//     id: user.id,
-//     username: user.username,
-//     profileImageUrl: user.profileImageUrl,
-//     externalUsername:
-//       user.externalAccounts.find(
-//         (externalAccount) => externalAccount.provider === "oauth_github"
-//       )?.username || null,
-//   };
-// };
 
 // const addUserDataToPosts = async (posts: Post[]) => {
 //   const userId = posts.map((post) => post.authorId);
@@ -88,7 +75,7 @@ export const postsRouter = createTRPCRouter({
       limit: 100,
     });
 
-    const newPosts = posts.map((post) => {
+    const postsWithUsernames = posts.map((post) => {
       const foundUser = users.find((user) => user.id === post.authorId);
       const username = foundUser ? foundUser.username : "null";
 
@@ -98,8 +85,39 @@ export const postsRouter = createTRPCRouter({
       };
     });
 
-    return newPosts;
+    return postsWithUsernames;
   }),
+
+  getPostsById: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const postsByUser = await ctx.prisma.post.findMany({
+        where: {
+          authorId: input.userId,
+        },
+        take: 100,
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      const users = await clerkClient.users.getUserList({
+        userId: postsByUser.map((post) => post.authorId),
+        limit: 100,
+      });
+
+      const postsByUserWithUsername = postsByUser.map((post) => {
+        const foundUser = users.find((user) => user.id === post.authorId);
+        const username = foundUser ? foundUser.username : "null";
+
+        return {
+          ...post,
+          username,
+        };
+      });
+
+      return postsByUserWithUsername;
+    }),
 
   create: privateProcedure
     .input(z.object({ content: z.string().min(1).max(100) }))

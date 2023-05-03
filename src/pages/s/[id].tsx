@@ -7,8 +7,8 @@ const PostPage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Seeter</title>
-        <meta name="description" content="twitter but seeter" />
+        <title>Seethe</title>
+        <meta name="description" content="unique seethed seethe" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <BaseLayout>

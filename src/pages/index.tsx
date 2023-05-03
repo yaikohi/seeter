@@ -87,43 +87,11 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <BaseLayout>
-        {/* <h1 className="mb-4 tracking-tight">Seeter</h1> */}
-        <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
-        <div className="my-12 flex max-w-6xl flex-col gap-8 px-4 xl:mx-auto xl:flex-row">
-          <div className="h-min rounded-xl p-8">
-            {!userSignedIn && (
-              <div className="flex h-min min-w-min max-w-sm flex-col gap-8">
-                <div className="">
-                  <h2>Hello stranger!</h2>
-                  <p>Please login with github to seethe!</p>
-                </div>
+        <div className="my-8 w-full xl:mx-auto xl:my-0">
+          <PostCreator />
 
-                <SignInButton>
-                  <Button className="" variant={"default"}>
-                    Sign in!
-                  </Button>
-                </SignInButton>
-              </div>
-            )}
-            {userSignedIn && (
-              <div className=" h-min min-w-max max-w-sm">
-                <h2>Hello {user.username}!</h2>
-                <p>Welcome to seeter</p>
-
-                <SignOutButton>
-                  <Button className="" variant={"secondary"}>
-                    Sign out!
-                  </Button>
-                </SignOutButton>
-              </div>
-            )}
-          </div>
-          <div className="my-8 w-full xl:mx-auto xl:my-0">
-            <PostCreator />
-
-            {postsLoading && <LoadingSpinner />}
-            {!postsLoading && posts && <Feed posts={posts} />}
-          </div>
+          {postsLoading && <LoadingSpinner />}
+          {!postsLoading && posts && <Feed posts={posts} />}
         </div>
       </BaseLayout>
     </>

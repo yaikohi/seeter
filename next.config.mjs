@@ -19,5 +19,15 @@ const config = withAxiom({
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    remotePatterns: [
+      {
+        hostname: "images.clerk.dev",
+        pathname: "/oauth_github/*",
+        protocol: "https",
+        port: "",
+      },
+    ],
+  },
 });
 export default config;

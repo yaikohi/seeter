@@ -8,7 +8,7 @@ export type PostGetAllOutput = RouterOutputs["posts"]["getAll"];
 export function Feed({ posts }: { posts: PostGetAllOutput }) {
   return (
     <div className="flex flex-col gap-2 rounded-xl p-2">
-      <h2>Posts</h2>
+      <h2>Seethes</h2>
       <div className="flex flex-col gap-2 xl:max-w-[60rem]">
         {posts?.map((post) => {
           return (
