@@ -60,13 +60,16 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
                 />
                 <div className="flex flex-col ">
                   <div className="flex flex-col">
-                    <h1 className="text-xl font-bold tracking-normal border-b-2 border-border">
+                    <h1 className="border-b-2 border-border text-xl font-bold tracking-normal">
                       {"@"}
                       {user.username}
                     </h1>
                   </div>
                   <div className="flex gap-4 pt-1">
-                    <Link href={`https://github.com/${username}`} className="flex gap-2 place-items-center hover:underline">
+                    <Link
+                      href={`https://github.com/${username}`}
+                      className="flex place-items-center gap-2 hover:underline"
+                    >
                       <Github className="stroke-foreground/50" />
                       {/* <p className=""> Github</p> */}
                     </Link>
@@ -76,7 +79,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
             </div>
           </div>
           <div>
-            <Feed posts={postsByUser} />
+            <Feed loggedInUser={user} posts={postsByUser} />
           </div>
         </div>
       </BaseLayout>

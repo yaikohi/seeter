@@ -2,7 +2,7 @@ import { type NextPage } from "next";
 import Head from "next/head";
 
 import { api } from "~/utils/api";
-import { SignIn, SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { LoadingSpinner } from "~/components/ui/loading-spinner";
@@ -74,7 +74,7 @@ function PostCreator() {
 }
 
 const Home: NextPage = () => {
-  const { user, isLoaded: userLoaded } = useUser();
+  const { user, isLoaded: userLoaded, isSignedIn } = useUser();
   const { data: posts, isLoading: postsLoading } = api.posts.getAll.useQuery();
 
   if (postsLoading && !userLoaded) return <div />;
@@ -91,7 +91,9 @@ const Home: NextPage = () => {
           <PostCreator />
 
           {postsLoading && <LoadingSpinner />}
-          {!postsLoading && posts && <Feed posts={posts} loggedInUser={user} />}
+          {!postsLoading && posts && (
+            <Feed posts={posts} loggedInUser={user} isSignedIn={!!isSignedIn} />
+          )}
         </div>
       </BaseLayout>
     </>

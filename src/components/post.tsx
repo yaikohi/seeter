@@ -3,7 +3,7 @@ import { type RouterOutputs, api } from "~/utils/api";
 import { intlFormatDistance } from "date-fns";
 import { Fade } from "react-awesome-reveal";
 import Link from "next/link";
-import { MoreHorizontal, Trash2, User } from "lucide-react";
+import { LogIn, MoreHorizontal, Trash2, User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,18 +21,28 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import { type useUser } from "@clerk/nextjs";
+import { SignInButton, type useUser } from "@clerk/nextjs";
 import { toast } from "./ui/use-toast";
+import type { filterUserForClient } from "~/server/helpers/filterUserForClient";
+
 export type PostGetAllOutput = RouterOutputs["posts"]["getAll"];
 export type LoggedInUser = ReturnType<typeof useUser>["user"];
 
 export function Feed({
   posts,
   loggedInUser,
+  isSignedIn,
 }: {
   posts: PostGetAllOutput;
-  loggedInUser: LoggedInUser;
+  loggedInUser: LoggedInUser | ReturnType<typeof filterUserForClient>;
+  isSignedIn?: boolean;
 }) {
+  /**
+   * Messy as hell but ok
+   */
+  const isActuallySignedIn = !!(
+    loggedInUser && typeof loggedInUser.username === "string"
+  );
   return (
     <div className="flex flex-col gap-2 rounded-xl p-2">
       <h2>Seethes</h2>
@@ -41,7 +51,11 @@ export function Feed({
           return (
             <div key={post.id}>
               <Fade damping={20}>
-                <Post post={post} loggedInUser={loggedInUser} />
+                <Post
+                  post={post}
+                  loggedInUser={loggedInUser}
+                  isSignedIn={isSignedIn || isActuallySignedIn}
+                />
               </Fade>
             </div>
           );
@@ -53,18 +67,18 @@ export function Feed({
 
 interface PostProps extends ComponentProps<"div"> {
   post: RouterOutputs["posts"]["getAll"][number];
-  loggedInUser: LoggedInUser;
+  loggedInUser: LoggedInUser | ReturnType<typeof filterUserForClient>;
+  isSignedIn?: boolean;
 }
 
 export function Post(props: PostProps) {
   const {
     post: { content },
-    loggedInUser,
   } = props;
 
   return (
     <div className="flex flex-col rounded-xl bg-muted p-2 opacity-100 transition-opacity duration-200 delay-200">
-      <PostName post={props.post} loggedInUser={loggedInUser} />
+      <PostName {...props} />
       <p className="ml-4 break-words">{content}</p>
     </div>
   );
@@ -96,16 +110,15 @@ export function SeetheMenuOptions(props: PostProps) {
   const {
     post: { authorId, id },
     loggedInUser,
+    isSignedIn,
   } = props;
 
   const isLoggedInUserSeethe = loggedInUser && authorId === loggedInUser.id;
-  const ctx = api.useContext();
 
-  if (isLoggedInUserSeethe) {
+  if (isSignedIn && isLoggedInUserSeethe) {
     const { mutate: deleteSeethe } = api.posts.delete.useMutation({
-      onSuccess: async () => {
+      onSuccess: () => {
         toast({ title: "Seethe deleted!" });
-        await ctx.posts.getAll.invalidate();
       },
       onError: (e) => {
         const errorMessage = e.data?.zodError?.fieldErrors?.content;
@@ -150,18 +163,34 @@ export function SeetheMenuOptions(props: PostProps) {
     );
   }
 
+  if (isSignedIn) {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <MoreHorizontal />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent side={"left"}>
+          <DropdownMenuItem disabled className="flex place-items-center gap-2">
+            <User />
+            <span>Follow</span>
+            <DropdownMenuShortcut className="tracking-tight">
+              Coming soon...
+            </DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
         <MoreHorizontal />
       </DropdownMenuTrigger>
       <DropdownMenuContent side={"left"}>
-        <DropdownMenuItem disabled className="flex place-items-center gap-2">
-          <User />
-          <span>Follow</span>
-          <DropdownMenuShortcut className="tracking-tight">
-            Coming soon...
-          </DropdownMenuShortcut>
+        <DropdownMenuItem className="flex place-items-center gap-2">
+          <LogIn />
+          <SignInButton>Sign in</SignInButton>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
