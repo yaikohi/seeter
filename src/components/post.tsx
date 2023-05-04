@@ -1,15 +1,14 @@
 import type { ComponentProps } from "react";
-import type { RouterOutputs } from "~/utils/api";
+import { type RouterOutputs, api } from "~/utils/api";
 import { intlFormatDistance } from "date-fns";
 import { Fade } from "react-awesome-reveal";
 import Link from "next/link";
-import { MoreHorizontal, Trash2, User, UserX } from "lucide-react";
+import { MoreHorizontal, Trash2, User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuShortcut,
-  DropdownMenuSubContent,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
@@ -23,6 +22,7 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { type useUser } from "@clerk/nextjs";
+import { toast } from "./ui/use-toast";
 export type PostGetAllOutput = RouterOutputs["posts"]["getAll"];
 export type LoggedInUser = ReturnType<typeof useUser>["user"];
 
@@ -65,16 +65,14 @@ export function Post(props: PostProps) {
   return (
     <div className="flex flex-col rounded-xl bg-muted p-2 opacity-100 transition-opacity duration-200 delay-200">
       <PostName post={props.post} loggedInUser={loggedInUser} />
-      {/* <Link href={`/s/${id}`}> */}
       <p className="ml-4 break-words">{content}</p>
-      {/* </Link > */}
     </div>
   );
 }
 
 export function PostName(props: PostProps) {
   const {
-    post: { username, createdAt, id },
+    post: { username, createdAt },
   } = props;
 
   return (
@@ -96,13 +94,29 @@ export function PostName(props: PostProps) {
 
 export function SeetheMenuOptions(props: PostProps) {
   const {
-    post: { authorId },
+    post: { authorId, id },
     loggedInUser,
   } = props;
 
   const isLoggedInUserSeethe = loggedInUser && authorId === loggedInUser.id;
+  const ctx = api.useContext();
 
   if (isLoggedInUserSeethe) {
+    const { mutate: deleteSeethe } = api.posts.delete.useMutation({
+      onSuccess: async () => {
+        toast({ title: "Seethe deleted!" });
+        await ctx.posts.getAll.invalidate();
+      },
+      onError: (e) => {
+        const errorMessage = e.data?.zodError?.fieldErrors?.content;
+
+        if (errorMessage) {
+          return toast({ title: "Error", description: errorMessage[0] });
+        }
+
+        return toast({ title: "Error", description: e.message });
+      },
+    });
     return (
       <Dialog>
         <DropdownMenu>
@@ -127,7 +141,9 @@ export function SeetheMenuOptions(props: PostProps) {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button type="submit">Delete seethe</Button>
+            <Button type="submit" onClick={() => deleteSeethe({ postId: id })}>
+              Delete seethe
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -140,10 +156,7 @@ export function SeetheMenuOptions(props: PostProps) {
         <MoreHorizontal />
       </DropdownMenuTrigger>
       <DropdownMenuContent side={"left"}>
-        <DropdownMenuItem
-          disabled
-          className="flex place-items-center gap-2"
-        >
+        <DropdownMenuItem disabled className="flex place-items-center gap-2">
           <User />
           <span>Follow</span>
           <DropdownMenuShortcut className="tracking-tight">
