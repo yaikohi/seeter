@@ -17,6 +17,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
       username,
     });
 
+  const loggedInUser = useUser().user;
   if (userLoading) {
     console.log("\n\nLoading state hit for user!\n\n");
     return <LoadingPage />;
@@ -79,7 +80,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
             </div>
           </div>
           <div>
-            <Feed loggedInUser={user} posts={postsByUser} />
+            <ProfileFeed loggedInUser={loggedInUser} posts={postsByUser} />
           </div>
         </div>
       </BaseLayout>
@@ -93,7 +94,9 @@ import { prisma } from "~/server/db";
 import Image from "next/image";
 import Link from "next/link";
 import { Github } from "lucide-react";
-import { Feed } from "~/components/post";
+import { ProfileFeed } from "~/components/feed";
+import { useUser } from "@clerk/nextjs";
+// import { Feed } from "~/pages";
 
 export const getStaticProps: GetStaticProps = async (
   context: GetStaticPropsContext

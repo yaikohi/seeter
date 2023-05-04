@@ -1,17 +1,18 @@
+import React from "react";
 import { type NextPage } from "next";
 import Head from "next/head";
+import { useUser } from "@clerk/nextjs";
 
 import { api } from "~/utils/api";
-import { useUser } from "@clerk/nextjs";
+
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { LoadingSpinner } from "~/components/ui/loading-spinner";
-import React from "react";
 import { useToast } from "~/components/ui/use-toast";
 import { LoadingPage } from "~/components/loading-page";
-import { Feed } from "~/components/post";
 import { UserProfile } from "~/components/user-profile";
 import { BaseLayout } from "~/components/base-layout";
+import { MainFeed } from "~/components/feed";
 
 function PostCreator() {
   const { user } = useUser();
@@ -92,7 +93,11 @@ const Home: NextPage = () => {
 
           {postsLoading && <LoadingSpinner />}
           {!postsLoading && posts && (
-            <Feed posts={posts} loggedInUser={user} isSignedIn={!!isSignedIn} />
+            <MainFeed
+              posts={posts}
+              loggedInUser={user}
+              // isSignedIn={!!isSignedIn}
+            />
           )}
         </div>
       </BaseLayout>

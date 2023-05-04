@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react";
-import { type RouterOutputs, api } from "~/utils/api";
+import { api, type RouterOutputs } from "~/utils/api";
 import { intlFormatDistance } from "date-fns";
 import { Fade } from "react-awesome-reveal";
 import Link from "next/link";
@@ -10,8 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Button } from "./ui/button";
+} from "~/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -20,116 +19,92 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "./ui/dialog";
+} from "~/components/ui/dialog";
+import type { filterUserForClient } from "~/server/helpers/filterUserForClient";
 import { SignInButton, type useUser } from "@clerk/nextjs";
 import { toast } from "./ui/use-toast";
-import type { filterUserForClient } from "~/server/helpers/filterUserForClient";
+import { Button } from "./ui/button";
 
 export type PostGetAllOutput = RouterOutputs["posts"]["getAll"];
 export type LoggedInUser = ReturnType<typeof useUser>["user"];
 
-export function Feed({
-  posts,
-  loggedInUser,
-  isSignedIn,
-}: {
-  posts: PostGetAllOutput;
-  loggedInUser: LoggedInUser | ReturnType<typeof filterUserForClient>;
-  isSignedIn?: boolean;
-}) {
-  /**
-   * Messy as hell but ok
-   */
-  const isActuallySignedIn = !!(
-    loggedInUser && typeof loggedInUser.username === "string"
-  );
-  return (
-    <div className="flex flex-col gap-2 rounded-xl p-2">
-      <h2>Seethes</h2>
-      <div className="flex flex-col gap-2 xl:max-w-[60rem]">
-        {posts?.map((post) => {
-          return (
-            <div key={post.id}>
-              <Fade damping={20}>
-                <Post
-                  post={post}
-                  loggedInUser={loggedInUser}
-                  isSignedIn={isSignedIn || isActuallySignedIn}
-                />
-              </Fade>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-interface PostProps extends ComponentProps<"div"> {
+interface SeetheProps extends ComponentProps<"div"> {
   post: RouterOutputs["posts"]["getAll"][number];
   loggedInUser: LoggedInUser | ReturnType<typeof filterUserForClient>;
-  isSignedIn?: boolean;
+  // isSignedIn?: boolean;
 }
 
-export function Post(props: PostProps) {
+export function Seethe(props: SeetheProps) {
   const {
-    post: { content },
+    children,
+    post: { content, username, createdAt },
+    ...rest
   } = props;
 
   return (
-    <div className="flex flex-col rounded-xl bg-muted p-2 opacity-100 transition-opacity duration-200 delay-200">
-      <PostName {...props} />
-      <p className="ml-4 break-words">{content}</p>
-    </div>
-  );
-}
-
-export function PostName(props: PostProps) {
-  const {
-    post: { username, createdAt },
-  } = props;
-
-  return (
-    <div className="flex place-items-center justify-between gap-2 px-2 py-1 text-sm">
-      <div className="flex place-items-center gap-2">
-        <Link
-          href={`/@${username as string}`}
-          className="text-base font-bold tracking-tight hover:underline"
-        >{`@${username as string}`}</Link>
-        <span className="font-light">·</span>
-        <span className="font-light">
-          {intlFormatDistance(createdAt, new Date())}
-        </span>
+    <div
+      className="flex flex-col rounded-xl bg-muted p-2 opacity-100 transition-opacity duration-200 delay-200"
+      {...rest}
+    >
+      <div className="flex place-items-center justify-between gap-2 px-2 py-1 text-sm">
+        <div className="flex place-items-center gap-2">
+          <h3 className="text-base font-bold">{username as string}</h3>
+          <Link
+            href={`/@${username as string}`}
+            className="text-smfont-light tracking-tight hover:underline"
+          >{`@${username as string}`}</Link>
+          <span className="font-light">·</span>
+          <span className="font-light">
+            {intlFormatDistance(createdAt, new Date())}
+          </span>
+        </div>
+        {children}
       </div>
-      <SeetheMenuOptions {...props} />
+      <p className="ml-2 break-words">{content}</p>
     </div>
   );
 }
 
-export function SeetheMenuOptions(props: PostProps) {
+interface SeetheDropdownMenuProps extends SeetheProps {
+  ctx: ReturnType<typeof api.useContext>;
+}
+/**
+ * The dropdown menu + dialogue modal for a Seethe.
+ *
+ * There are currently three states that are possible.
+ * - user is not logged in
+ * - user is logged in + is not Seethe author
+ * - user is logged in + is Seethe author
+ *
+ * TODO: Somehow refactor this?
+ */
+export function SeetheDropdownMenu(props: SeetheDropdownMenuProps) {
   const {
+    ctx,
     post: { authorId, id },
     loggedInUser,
-    isSignedIn,
   } = props;
 
   const isLoggedInUserSeethe = loggedInUser && authorId === loggedInUser.id;
 
-  if (isSignedIn && isLoggedInUserSeethe) {
-    const { mutate: deleteSeethe } = api.posts.delete.useMutation({
-      onSuccess: () => {
-        toast({ title: "Seethe deleted!" });
-      },
-      onError: (e) => {
-        const errorMessage = e.data?.zodError?.fieldErrors?.content;
+  const { mutate: deleteSeethe } = api.posts.delete.useMutation({
+    onSuccess: async () => {
+      toast({ title: "Seethe deleted!" });
+      await ctx.posts.getAll.invalidate();
+    },
+    onError: (e) => {
+      const errorMessage = e.data?.zodError?.fieldErrors?.content;
 
-        if (errorMessage) {
-          return toast({ title: "Error", description: errorMessage[0] });
-        }
+      if (errorMessage) {
+        return toast({ title: "Error", description: errorMessage[0] });
+      }
 
-        return toast({ title: "Error", description: e.message });
-      },
-    });
+      return toast({ title: "Error", description: e.message });
+    },
+  });
+
+  /** User is logged in and is the Seethe author */
+  if (isLoggedInUserSeethe) {
     return (
       <Dialog>
         <DropdownMenu>
@@ -163,7 +138,8 @@ export function SeetheMenuOptions(props: PostProps) {
     );
   }
 
-  if (isSignedIn) {
+  /** User is logged in is not the Seethe author */
+  if (loggedInUser?.id) {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger>
@@ -182,6 +158,7 @@ export function SeetheMenuOptions(props: PostProps) {
     );
   }
 
+  /** User is not logged in */
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
