@@ -19,7 +19,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
 
   const loggedInUser = useUser().user;
   if (userLoading) {
-    console.log("\n\nLoading state hit for user!\n\n");
+    // console.log("\n\nLoading state hit for user!\n\n");
     return <LoadingPage />;
   }
 
@@ -29,7 +29,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
     api.posts.getPostsById.useQuery({ userId: user.id });
 
   if (postsLoading) {
-    console.log("\n\nLoading state hit for postsByUser!\n\n");
+    // console.log("\n\nLoading state hit for postsByUser!\n\n");
     return <LoadingPage />;
   }
 
