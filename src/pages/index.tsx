@@ -74,7 +74,7 @@ function PostCreator() {
 }
 
 const Home: NextPage = () => {
-  const { user, isSignedIn: userSignedIn, isLoaded: userLoaded } = useUser();
+  const { user, isLoaded: userLoaded } = useUser();
   const { data: posts, isLoading: postsLoading } = api.posts.getAll.useQuery();
 
   if (postsLoading && !userLoaded) return <div />;
@@ -91,7 +91,7 @@ const Home: NextPage = () => {
           <PostCreator />
 
           {postsLoading && <LoadingSpinner />}
-          {!postsLoading && posts && <Feed posts={posts} />}
+          {!postsLoading && posts && <Feed posts={posts} loggedInUser={user} />}
         </div>
       </BaseLayout>
     </>

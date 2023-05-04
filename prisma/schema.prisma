@@ -24,3 +24,34 @@ model Post {
 
     @@index([authorId])
 }
+
+model Profile {
+    id        String   @id @default(cuid())
+    authorId  String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now())
+
+    FollowersOnProfile FollowersOnProfile[]
+
+    @@index([authorId])
+}
+
+model FollowersOnProfile {
+    profile    Profile  @relation(fields: [profileId], references: [id])
+    profileId  String
+    follower   Follower @relation(fields: [followerId], references: [id])
+    followerId String
+
+    assignedAt DateTime @default(now())
+    assignedBy String
+
+    @@id([profileId, followerId])
+    @@index([followerId])
+    @@index([profileId])
+}
+
+model Follower {
+    id                 String               @id @default(cuid())
+    authorId           String
+    FollowersOnProfile FollowersOnProfile[]
+}
