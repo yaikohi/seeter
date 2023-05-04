@@ -8,6 +8,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuShortcut,
+  DropdownMenuSubContent,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
@@ -138,9 +140,15 @@ export function SeetheMenuOptions(props: PostProps) {
         <MoreHorizontal />
       </DropdownMenuTrigger>
       <DropdownMenuContent side={"left"}>
-        <DropdownMenuItem className="flex place-items-center gap-2">
+        <DropdownMenuItem
+          disabled
+          className="flex place-items-center gap-2"
+        >
           <User />
           <span>Follow</span>
+          <DropdownMenuShortcut className="tracking-tight">
+            Coming soon...
+          </DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
