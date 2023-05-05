@@ -41,7 +41,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
       </Head>
       <BaseLayout>
         <div className="relative flex w-full flex-col gap-8">
-          <div className="absolute inset-0 -z-50  bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-sky/10  via-blue-200/20 to-violet-300/20 backdrop-blur-3xl"></div>
+          <div className="from-sky/10 absolute inset-0  -z-50 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]  via-blue-200/20 to-violet-300/20 backdrop-blur-3xl"></div>
           <div className="bg-background-100/40 z-50 mx-auto w-full backdrop-blur-xl">
             <div className="flex h-full place-items-end">
               <div className="flex w-full flex-col place-items-center gap-8 bg-background/30 p-8 px-2">
@@ -61,7 +61,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
               </div>
             </div>
           </div>
-          <div className="mx-auto rounded-xl">
+          <div className="mx-auto w-full rounded-xl">
             <ProfileFeed loggedInUser={loggedInUser} posts={postsByUser} />
           </div>
         </div>
