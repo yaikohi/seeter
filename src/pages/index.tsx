@@ -41,7 +41,7 @@ function PostCreator() {
   if (!user) return null;
 
   return (
-    <div className="rounded-xl bg-background/40 p-8 hover:bg-background transition-all duration-100 ease-in-out">
+    <div className="rounded-xl bg-background p-8 transition-all duration-100 ease-in-out hover:bg-background sm:bg-background/40">
       <div className="mx-2 flex gap-4 ">
         <UserProfile imgUrl={user.profileImageUrl} />
 
