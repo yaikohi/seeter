@@ -28,7 +28,7 @@ export function UserNav() {
           variant="ghost"
           className="relative h-8 w-8 rounded-full bg-slate-500"
         >
-          <Avatar className="h-16 w-16">
+          <Avatar className="h-12 w-12">
             <AvatarImage
               src={user?.profileImageUrl}
               alt={`${username}'s profile picture`}
@@ -55,18 +55,20 @@ export function UserNav() {
             </Link>
           </DropdownMenuItem>
 
-          <DropdownMenuItem disabled>
-            <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
+          <DropdownMenuItem>
+            <Link href={`/@${username}/settings`} className="flex">
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Settings</span>
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <LogOut className="mr-2 h-4 w-4" />
-          <SignOutButton>
+        <SignOutButton>
+          <DropdownMenuItem className="hover:cursor-pointer">
+            <LogOut className="mr-2 h-4 w-4" />
             <span>Sign out</span>
-          </SignOutButton>
-        </DropdownMenuItem>
+          </DropdownMenuItem>
+        </SignOutButton>
       </DropdownMenuContent>
     </DropdownMenu>
   );

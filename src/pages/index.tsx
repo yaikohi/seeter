@@ -41,33 +41,35 @@ function PostCreator() {
   if (!user) return null;
 
   return (
-    <div className="mx-2 flex gap-4">
-      <UserProfile imgUrl={user.profileImageUrl} />
+    <div className="rounded-xl bg-background/40 p-8 hover:bg-background transition-all duration-100 ease-in-out">
+      <div className="mx-2 flex gap-4 ">
+        <UserProfile imgUrl={user.profileImageUrl} />
 
-      <div className="flex max-w-[50rem] flex-grow flex-col gap-2">
-        <Input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="What's up?"
-          type="text"
-          disabled={isPosting}
-        />
+        <div className="flex max-w-[50rem] flex-grow flex-col gap-2">
+          <Input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="What's up?"
+            type="text"
+            disabled={isPosting}
+          />
 
-        <div className="flex justify-between">
-          {input.length > 100 && (
-            <p className="text-sm text-red-500">
-              Too many characters (over 100)!
-            </p>
-          )}
-          <div className="flex gap-2">{/* Icons can be put here */}</div>
-          <Button
-            disabled={input === "" || input.length > 100}
-            className="max-w-[72px] rounded-full"
-            variant={"default"}
-            onClick={() => mutate({ content: input })}
-          >
-            seethe
-          </Button>
+          <div className="flex justify-between">
+            {input.length > 100 && (
+              <p className="text-sm text-red-500">
+                Too many characters (over 100)!
+              </p>
+            )}
+            <div className="flex gap-2">{/* Icons can be put here */}</div>
+            <Button
+              disabled={input === "" || input.length > 100}
+              className="max-w-[72px] rounded-full"
+              variant={"default"}
+              onClick={() => mutate({ content: input })}
+            >
+              seethe
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -75,7 +77,7 @@ function PostCreator() {
 }
 
 const Home: NextPage = () => {
-  const { user, isLoaded: userLoaded, isSignedIn } = useUser();
+  const { user, isLoaded: userLoaded } = useUser();
   const { data: posts, isLoading: postsLoading } = api.posts.getAll.useQuery();
 
   if (postsLoading && !userLoaded) return <div />;
@@ -93,11 +95,7 @@ const Home: NextPage = () => {
 
           {postsLoading && <LoadingSpinner />}
           {!postsLoading && posts && (
-            <MainFeed
-              posts={posts}
-              loggedInUser={user}
-              // isSignedIn={!!isSignedIn}
-            />
+            <MainFeed posts={posts} loggedInUser={user} />
           )}
         </div>
       </BaseLayout>

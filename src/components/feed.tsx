@@ -21,7 +21,10 @@ export function MainFeed(props: MainFeedProps) {
   const ctx = api.useContext();
 
   return (
-    <div className="flex flex-col gap-2 rounded-xl p-2" {...rest}>
+    <div
+      className="my-8 flex flex-col gap-2 rounded-xl bg-background/30 p-2 "
+      {...rest}
+    >
       <h2>Seethes</h2>
       <div className="flex flex-col gap-2 xl:max-w-[60rem]">
         {posts?.map((post) => {
@@ -54,7 +57,10 @@ export function ProfileFeed(props: ProfileFeedProps) {
   const ctx = api.useContext();
 
   return (
-    <div className="flex flex-col gap-2 rounded-xl p-2" {...rest}>
+    <div
+      className="my-8 flex flex-col gap-2 rounded-xl bg-background/30 p-2"
+      {...rest}
+    >
       <h2>Seethes</h2>
       <div className="flex flex-col gap-2 xl:max-w-[60rem]">
         {posts?.map((post) => {

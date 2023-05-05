@@ -16,7 +16,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
     username,
   });
   const loggedInUser = useUser().user;
-  const { mutate } = api.profiles.updateProfile.useMutation();
+  // const { mutate } = api.profiles.updateProfile.useMutation();
 
   if (!user) return <div>404</div>;
 
@@ -40,52 +40,28 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <BaseLayout>
-        <div className="flex w-full flex-col gap-20">
-          <div className="h-48">
+        <div className="relative flex w-full flex-col gap-8">
+          <div className="absolute inset-0 -z-50  bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-sky/10  via-blue-200/20 to-violet-300/20 backdrop-blur-3xl"></div>
+          <div className="bg-background-100/40 z-50 mx-auto w-full backdrop-blur-xl">
             <div className="flex h-full place-items-end">
-              <div className="flex w-full place-items-center gap-8 px-2">
+              <div className="flex w-full flex-col place-items-center gap-8 bg-background/30 p-8 px-2">
                 <Image
                   src={user.profileImageUrl}
                   alt={`${
                     user.username ? user.username : username ?? ""
                   }'s profile picture`}
-                  height={8 * 12}
-                  width={8 * 12}
+                  height={64}
+                  width={64}
                   className="max-h-[96px] max-w-[96px] rounded-full"
                 />
-                <div className="flex flex-col ">
-                  <div className="flex flex-col">
-                    <h1 className="border-b-2 border-border text-xl font-bold tracking-normal">
-                      {"@"}
-                      {user.username}
-                    </h1>
-                  </div>
-                  <div className="flex gap-4 pt-1">
-                    <Link
-                      href={`https://github.com/${username}`}
-                      className="flex place-items-center gap-2 hover:underline"
-                    >
-                      <Github className="stroke-foreground/50" />
-                      {/* <p className=""> Github</p> */}
-                    </Link>
-                  </div>
-                  {loggedInUser && loggedInUser.id === user.id && (
-                    <Button
-                      onClick={() =>
-                        mutate({
-                          description: "Some description",
-                          urls: { github: "somegithuburl", readcv: "???" },
-                        })
-                      }
-                    >
-                      Update
-                    </Button>
-                  )}
-                </div>
+                <h1 className="text-xl font-bold tracking-tighter">
+                  {"@"}
+                  {user.username}
+                </h1>
               </div>
             </div>
           </div>
-          <div>
+          <div className="mx-auto rounded-xl">
             <ProfileFeed loggedInUser={loggedInUser} posts={postsByUser} />
           </div>
         </div>
@@ -98,11 +74,8 @@ import { createServerSideHelpers } from "@trpc/react-query/server";
 import superjson from "superjson";
 import { prisma } from "~/server/db";
 import Image from "next/image";
-import Link from "next/link";
-import { Github } from "lucide-react";
 import { ProfileFeed } from "~/components/feed";
 import { useUser } from "@clerk/nextjs";
-import { Button } from "~/components/ui/button";
 
 export const getStaticProps: GetStaticProps = async (
   context: GetStaticPropsContext
