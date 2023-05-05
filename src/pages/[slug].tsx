@@ -12,24 +12,18 @@ import { appRouter } from "~/server/api/root";
 import { api } from "~/utils/api";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
-  const { data: user, isLoading: userLoading } =
-    api.profiles.getUserByUsername.useQuery({
-      username,
-    });
-
+  const { data: user } = api.profiles.getUserByUsername.useQuery({
+    username,
+  });
   const loggedInUser = useUser().user;
-  if (userLoading) {
-    // console.log("\n\nLoading state hit for user!\n\n");
-    return <LoadingPage />;
-  }
+  const { mutate } = api.profiles.updateProfile.useMutation();
 
   if (!user) return <div>404</div>;
 
   const { data: postsByUser, isLoading: postsLoading } =
-    api.posts.getPostsById.useQuery({ userId: user.id });
+    api.posts.getPostsById.useQuery({ userId: user?.id });
 
   if (postsLoading) {
-    // console.log("\n\nLoading state hit for postsByUser!\n\n");
     return <LoadingPage />;
   }
 
@@ -75,6 +69,18 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
                       {/* <p className=""> Github</p> */}
                     </Link>
                   </div>
+                  {loggedInUser && loggedInUser.id === user.id && (
+                    <Button
+                      onClick={() =>
+                        mutate({
+                          description: "Some description",
+                          urls: { github: "somegithuburl", readcv: "???" },
+                        })
+                      }
+                    >
+                      Update
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
@@ -96,7 +102,7 @@ import Link from "next/link";
 import { Github } from "lucide-react";
 import { ProfileFeed } from "~/components/feed";
 import { useUser } from "@clerk/nextjs";
-// import { Feed } from "~/pages";
+import { Button } from "~/components/ui/button";
 
 export const getStaticProps: GetStaticProps = async (
   context: GetStaticPropsContext

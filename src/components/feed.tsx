@@ -8,7 +8,6 @@ import { type LoggedInUser, Seethe, SeetheDropdownMenu } from "./seethe";
 interface MainFeedProps extends ComponentProps<"div"> {
   posts: RouterOutputs["posts"]["getAll"];
   loggedInUser: LoggedInUser | ReturnType<typeof filterUserForClient>;
-  //   isSignedIn?: boolean;
 }
 
 /**
@@ -17,18 +16,7 @@ interface MainFeedProps extends ComponentProps<"div"> {
  * Can contain 'all' seethes or an individuals' specific seethes.
  */
 export function MainFeed(props: MainFeedProps) {
-  const {
-    posts,
-    loggedInUser,
-    // isSignedIn,
-    ...rest
-  } = props;
-  /**
-   * Messy as hell but ok
-   */
-  const isActuallySignedIn = !!(
-    loggedInUser && typeof loggedInUser.username === "string"
-  );
+  const { posts, loggedInUser, ...rest } = props;
 
   const ctx = api.useContext();
 
@@ -40,15 +28,10 @@ export function MainFeed(props: MainFeedProps) {
           return (
             <div key={post.id}>
               <Fade damping={20}>
-                <Seethe
-                  post={post}
-                  loggedInUser={loggedInUser}
-                  //   isSignedIn={isSignedIn || isActuallySignedIn}
-                >
+                <Seethe post={post} loggedInUser={loggedInUser}>
                   <SeetheDropdownMenu
                     loggedInUser={loggedInUser}
                     post={post}
-                    // isSignedIn={isSignedIn}
                     ctx={ctx}
                   />
                 </Seethe>
@@ -64,16 +47,10 @@ export function MainFeed(props: MainFeedProps) {
 interface ProfileFeedProps {
   posts: RouterOutputs["posts"]["getAll"];
   loggedInUser: LoggedInUser | ReturnType<typeof filterUserForClient>;
-  //   isSignedIn?: boolean;
 }
 
 export function ProfileFeed(props: ProfileFeedProps) {
-  const {
-    posts,
-    loggedInUser,
-    // isSignedIn,
-    ...rest
-  } = props;
+  const { posts, loggedInUser, ...rest } = props;
   const ctx = api.useContext();
 
   return (
@@ -84,15 +61,10 @@ export function ProfileFeed(props: ProfileFeedProps) {
           return (
             <div key={post.id}>
               <Fade damping={20}>
-                <Seethe
-                  post={post}
-                  loggedInUser={loggedInUser}
-                  //   isSignedIn={isSignedIn}
-                >
+                <Seethe post={post} loggedInUser={loggedInUser}>
                   <SeetheDropdownMenu
                     loggedInUser={loggedInUser}
                     post={post}
-                    // isSignedIn={isSignedIn}
                     ctx={ctx}
                   />
                 </Seethe>

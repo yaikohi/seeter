@@ -1,6 +1,8 @@
-import { SignIn, SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
+import { SignIn, SignInButton, useUser } from "@clerk/nextjs";
 import type { PropsWithChildren } from "react";
 import { Button } from "./ui/button";
+import { UserNav } from "./user-nav";
+import { Flame } from "lucide-react";
 import Link from "next/link";
 
 export const BaseLayout = (props: PropsWithChildren<object>) => {
@@ -12,8 +14,8 @@ export const BaseLayout = (props: PropsWithChildren<object>) => {
         <div className="absolute inset-0 -z-40 h-full w-full bg-opacity-40 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-muted to-background"></div>
         <div className="z-100 mx-auto max-w-[80rem] rounded-xl bg-background/10 p-2 shadow-2xl shadow-transparent backdrop-blur-3xl">
           <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
-          <div className="my-12 flex max-w-6xl flex-col gap-8 px-4 xl:mx-auto xl:flex-row">
-            <div className="h-min rounded-xl p-8">
+          <div className="my-12 flex flex-col gap-8   ">
+            <div className="h-min rounded-xl  px-4">
               {!userSignedIn && (
                 <div className="flex h-min min-w-min max-w-sm flex-col gap-8">
                   <div className="">
@@ -29,21 +31,12 @@ export const BaseLayout = (props: PropsWithChildren<object>) => {
                 </div>
               )}
               {userSignedIn && (
-                <div className=" h-min min-w-max max-w-sm">
-                  <h2>Hello {user.username}!</h2>
-                  <p>Welcome to seeter</p>
-
-                  <div className="flex flex-col gap-8 pt-4">
-                    <Link href="/" className="hover:underline">
-                      Home
-                    </Link>
-
-                    <SignOutButton>
-                      <Button className="max-w-[100px]" variant={"secondary"}>
-                        Sign out!
-                      </Button>
-                    </SignOutButton>
-                  </div>
+                <div className="flex justify-between ">
+                  <Flame className="invisible place-self-center" />
+                  <Link href="/">
+                    <Flame className="place-self-center" />
+                  </Link>
+                  <UserNav />
                 </div>
               )}
             </div>
