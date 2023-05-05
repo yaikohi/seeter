@@ -39,7 +39,7 @@ export function Seethe(props: SeetheProps) {
   } = props;
 
   return (
-    <div className="flex flex-col rounded-xl bg-background sm:bg-background/60 p-2 opacity-100 transition-all duration-100 ease-in-out hover:bg-background">
+    <div className="flex flex-col rounded-xl bg-background p-2 opacity-100 transition-all duration-100 ease-in-out hover:bg-background sm:bg-background/60">
       <div className="flex place-items-center justify-between gap-2 px-2 py-1 text-sm">
         <div className="flex place-items-center gap-2">
           <h3 className="text-base font-bold">{username as string}</h3>

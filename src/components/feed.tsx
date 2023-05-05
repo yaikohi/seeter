@@ -17,7 +17,6 @@ interface MainFeedProps extends ComponentProps<"div"> {
  */
 export function MainFeed(props: MainFeedProps) {
   const { posts, loggedInUser, ...rest } = props;
-
   const ctx = api.useContext();
 
   return (
@@ -26,23 +25,21 @@ export function MainFeed(props: MainFeedProps) {
       {...rest}
     >
       <h2>Seethes</h2>
-      <div className="flex flex-col gap-2 xl:max-w-[60rem]">
-        {posts?.map((post) => {
-          return (
-            <div key={post.id}>
-              <Fade damping={20}>
-                <Seethe post={post} loggedInUser={loggedInUser}>
-                  <SeetheDropdownMenu
-                    loggedInUser={loggedInUser}
-                    post={post}
-                    ctx={ctx}
-                  />
-                </Seethe>
-              </Fade>
-            </div>
-          );
-        })}
-      </div>
+      {posts?.map((post) => {
+        return (
+          <div key={post.id}>
+            <Fade damping={20}>
+              <Seethe post={post} loggedInUser={loggedInUser}>
+                <SeetheDropdownMenu
+                  loggedInUser={loggedInUser}
+                  post={post}
+                  ctx={ctx}
+                />
+              </Seethe>
+            </Fade>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -62,7 +59,6 @@ export function ProfileFeed(props: ProfileFeedProps) {
       {...rest}
     >
       <h2>Seethes</h2>
-      <div className="flex flex-col gap-2 xl:max-w-[60rem]">
         {posts?.map((post) => {
           return (
             <div key={post.id}>
@@ -78,7 +74,6 @@ export function ProfileFeed(props: ProfileFeedProps) {
             </div>
           );
         })}
-      </div>
     </div>
   );
 }
