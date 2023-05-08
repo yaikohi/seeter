@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React from "react";
 import useIsClient from "./client";
 
 type Themes = "light" | "dark";
@@ -8,7 +8,7 @@ interface ThemeContextProps {
   toggleTheme: () => void;
 }
 
-const ThemeContext = createContext<ThemeContextProps>({
+const ThemeContext = React.createContext<ThemeContextProps>({
   theme: "light",
   toggleTheme: () => {
     //empty
@@ -23,23 +23,24 @@ export function ThemeContextProvider({
   children,
 }: ThemeContextProviderProps): React.ReactElement {
   const isClient = useIsClient();
-  const userBrowserPreferredTheme =
-    isClient && window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
 
-  const [theme, setTheme] = useState<Themes>(userBrowserPreferredTheme);
+  const [theme, setTheme] = React.useState<Themes>("light");
   const isLocalStorageEmpty = isClient && !localStorage.getItem("theme");
 
-  useEffect(() => {
+  React.useEffect(() => {
+    const userBrowserPreferredTheme =
+      isClient && window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+
     if (isLocalStorageEmpty) {
       localStorage.setItem("theme", userBrowserPreferredTheme);
     } else {
       setTheme(localStorage.getItem("theme") as Themes);
     }
-  }, [isLocalStorageEmpty, userBrowserPreferredTheme]);
+  }, [isClient, isLocalStorageEmpty]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     document.body.classList.remove("dark", "light");
     document.body.classList.add(theme);
     localStorage.setItem("theme", theme);
@@ -56,4 +57,4 @@ export function ThemeContextProvider({
   );
 }
 
-export const useThemeContext = () => useContext(ThemeContext);
+export const useThemeContext = () => React.useContext(ThemeContext);
