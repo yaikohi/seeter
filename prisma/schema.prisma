@@ -27,77 +27,22 @@ model Post {
 
 model Profile {
     id        String   @id @default(cuid())
-    authorId  String
+    authorId  String   @unique
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now())
 
-    username    String @db.VarChar(255)
+    username    String @unique @db.VarChar(255)
     description String @db.VarChar(255)
 
     // urls
-    github      GithubUrl? @relation(fields: [githubUrlId], references: [id])
-    githubUrlId String?    @unique
-
-    twitter      TwitterUrl? @relation(fields: [twitterUrlId], references: [id])
-    twitterUrlId String?     @unique
-
-    linkedin      LinkedinUrl? @relation(fields: [linkedinUrlId], references: [id])
-    linkedinUrlId String?      @unique
-
-    website      WebsiteUrl? @relation(fields: [websiteUrlId], references: [id])
-    websiteUrlId String?     @unique
-
-    readcv      ReadcvUrl? @relation(fields: [readcvUrlId], references: [id])
-    readcvUrlId String?    @unique
+    githubUsername  String?
+    twitterUsername String?
+    websiteUsername String?
+    readcvUsername  String?
 
     FollowersOnProfile FollowersOnProfile[]
 
     @@index([authorId])
-}
-
-model TwitterUrl {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now())
-
-    link    String
-    Profile Profile?
-}
-
-model WebsiteUrl {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now())
-
-    link    String
-    Profile Profile?
-}
-
-model GithubUrl {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now())
-
-    link    String
-    Profile Profile?
-}
-
-model LinkedinUrl {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now())
-
-    link    String
-    Profile Profile?
-}
-
-model ReadcvUrl {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now())
-
-    link    String
-    Profile Profile?
 }
 
 model FollowersOnProfile {

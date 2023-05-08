@@ -44,7 +44,6 @@ export const profileRouter = createTRPCRouter({
         description: z.string().min(1).max(100).optional(),
         urls: z
           .object({
-            linkedIn: z.string().optional(),
             twitter: z.string().optional(),
             github: z.string().optional(),
             website: z.string().optional(),
@@ -54,15 +53,30 @@ export const profileRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const test = {
-        description: input.description,
-        urls: input.urls,
-        username: input.username,
-      };
-      console.log("\n\n___________TEST___________\n");
-      console.dir(test);
-      console.log("\n\n__________________________\n");
+      // const test = {
+      //   description: input.description,
+      //   urls: input.urls,
+      //   username: input.username,
+      // };
+      // console.log("\n\n___________TEST___________\n");
+      // console.dir(test);
+      // console.log("\n\n__________________________\n");
 
-      return await new Promise(() => ({ ctx, input }));
+      const { prisma, userId } = ctx;
+
+      const { urls, description, username } = input;
+
+      if (urls) {
+        if (urls.twitter) {
+        }
+        if (urls.github) {
+        }
+        if (urls.readcv) {
+        }
+        if (urls.website) {
+        }
+      }
+
+      return await new Promise(() => ({ urls, description, username }));
     }),
 });

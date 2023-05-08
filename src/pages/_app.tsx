@@ -6,12 +6,15 @@ import "~/styles/globals.css";
 
 import { api } from "~/utils/api";
 import { Toaster } from "~/components/ui/toaster";
+import { ThemeContextProvider } from "~/components/context/theme";
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <ClerkProvider {...pageProps}>
-      <Component {...pageProps} />
-      <Toaster />
-    </ClerkProvider>
+    <ThemeContextProvider>
+      <ClerkProvider {...pageProps}>
+        <Component {...pageProps} />
+        <Toaster />
+      </ClerkProvider>
+    </ThemeContextProvider>
   );
 };
 
