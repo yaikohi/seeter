@@ -16,28 +16,23 @@ interface MainFeedProps extends ComponentProps<"div"> {
  * Can contain 'all' seethes or an individuals' specific seethes.
  */
 export function MainFeed(props: MainFeedProps) {
-  const { posts, loggedInUser, ...rest } = props;
+  const { posts, loggedInUser } = props;
   const ctx = api.useContext();
 
   return (
-    <div
-      className="my-8 flex flex-col gap-2 rounded-xl bg-background/30 p-2 "
-      {...rest}
-    >
+    <div className="my-8 flex flex-col gap-2 rounded-xl bg-background/30 p-2 ">
       <h2>Seethes</h2>
       {posts?.map((post) => {
         return (
-          <div key={post.id}>
-            <Fade damping={20}>
-              <Seethe post={post} loggedInUser={loggedInUser}>
-                <SeetheDropdownMenu
-                  loggedInUser={loggedInUser}
-                  post={post}
-                  ctx={ctx}
-                />
-              </Seethe>
-            </Fade>
-          </div>
+          <Fade key={post.id} damping={20}>
+            <Seethe post={post} loggedInUser={loggedInUser}>
+              <SeetheDropdownMenu
+                loggedInUser={loggedInUser}
+                post={post}
+                ctx={ctx}
+              />
+            </Seethe>
+          </Fade>
         );
       })}
     </div>
@@ -61,17 +56,15 @@ export function ProfileFeed(props: ProfileFeedProps) {
       <h2>Seethes</h2>
       {posts?.map((post) => {
         return (
-          <div key={post.id}>
-            <Fade damping={20}>
-              <Seethe post={post} loggedInUser={loggedInUser}>
-                <SeetheDropdownMenu
-                  loggedInUser={loggedInUser}
-                  post={post}
-                  ctx={ctx}
-                />
-              </Seethe>
-            </Fade>
-          </div>
+          <Fade key={post.id} damping={20}>
+            <Seethe key={post.id} post={post} loggedInUser={loggedInUser}>
+              <SeetheDropdownMenu
+                loggedInUser={loggedInUser}
+                post={post}
+                ctx={ctx}
+              />
+            </Seethe>
+          </Fade>
         );
       })}
     </div>

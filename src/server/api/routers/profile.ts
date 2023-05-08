@@ -37,46 +37,43 @@ export const profileRouter = createTRPCRouter({
 
       return filterUserForClient(user);
     }),
+  getProfileById: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.profile.findUnique({
+        where: {
+          authorId: input.id,
+        },
+      });
+    }),
   updateProfile: privateProcedure
     .input(
       z.object({
-        username: z.string().min(4).max(20).optional(),
-        description: z.string().min(1).max(100).optional(),
-        urls: z
-          .object({
-            twitter: z.string().optional(),
-            github: z.string().optional(),
-            website: z.string().optional(),
-            readcv: z.string().optional(),
-          })
+        username: z
+          .string()
+          // .min(4, "Username needs to be at least 4 characters long.")
+          .max(20, "Username can only be 20 characters long.")
+          .optional(),
+        description: z
+          .string()
+          .max(100, "Description can only be 100 characters long.")
           .optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      // const test = {
-      //   description: input.description,
-      //   urls: input.urls,
-      //   username: input.username,
-      // };
-      // console.log("\n\n___________TEST___________\n");
-      // console.dir(test);
-      // console.log("\n\n__________________________\n");
+      const { description, username } = input;
 
-      const { prisma, userId } = ctx;
-
-      const { urls, description, username } = input;
-
-      if (urls) {
-        if (urls.twitter) {
-        }
-        if (urls.github) {
-        }
-        if (urls.readcv) {
-        }
-        if (urls.website) {
-        }
-      }
-
-      return await new Promise(() => ({ urls, description, username }));
+      await ctx.prisma.profile.upsert({
+        where: { authorId: ctx.userId },
+        create: {
+          authorId: ctx.userId,
+          description: description || "",
+          username: username || "",
+        },
+        update: {
+          description: description || "",
+          username: username || "",
+        },
+      });
     }),
 });

@@ -9,12 +9,12 @@ import { Toaster } from "~/components/ui/toaster";
 import { ThemeContextProvider } from "~/components/context/theme";
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <ThemeContextProvider>
-      <ClerkProvider {...pageProps}>
+    <ClerkProvider {...pageProps}>
+      {/* <ThemeContextProvider> */}
         <Component {...pageProps} />
         <Toaster />
-      </ClerkProvider>
-    </ThemeContextProvider>
+      {/* </ThemeContextProvider> */}
+    </ClerkProvider>
   );
 };
 

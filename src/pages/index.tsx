@@ -12,7 +12,7 @@ import { useToast } from "~/components/ui/use-toast";
 import { LoadingPage } from "~/components/loading-page";
 import { UserProfile } from "~/components/user-profile";
 import { BaseLayout } from "~/components/base-layout";
-import { MainFeed } from "~/components/feed";
+// import { MainFeed } from "~/components/feed";
 
 function PostCreator() {
   const { user } = useUser();
@@ -167,9 +167,9 @@ const Home: NextPage = () => {
           <PostCreator />
 
           {postsLoading && <LoadingSpinner />}
-          {!postsLoading && posts && (
+          {/* {!postsLoading && posts && (
             <MainFeed posts={posts} loggedInUser={user} />
-          )}
+          )} */}
         </div>
       </BaseLayout>
     </>

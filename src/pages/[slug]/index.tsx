@@ -10,60 +10,29 @@ import { BaseLayout } from "~/components/base-layout";
 import { LoadingPage } from "~/components/loading-page";
 import { appRouter } from "~/server/api/root";
 import { api } from "~/utils/api";
-import { Button } from "~/components/ui/button";
-import { Github, Pencil, Twitter } from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "~/components/ui/sheet";
-import { Label } from "~/components/ui/label";
-import { Input } from "~/components/ui/input";
-import { Textarea } from "~/components/ui/textarea";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import superjson from "superjson";
 import { prisma } from "~/server/db";
 import Image from "next/image";
-import { ProfileFeed } from "~/components/feed";
+// import { ProfileFeed } from "~/components/feed";
 import { useUser } from "@clerk/nextjs";
+import { ProfileSheet } from "~/components/profile-sheet";
 
-type ProfileState = {
-  username?: string;
-  description?: string;
-  urls?: {
-    twitter?: string;
-    readcv?: string;
-    website?: string;
-    github?: string;
-  };
-};
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = api.profiles.getUserByUsername.useQuery({
     username,
   });
   const loggedInUser = useUser().user;
-  const { mutate } = api.profiles.updateProfile.useMutation();
 
-  const [profile, setProfile] = React.useState<ProfileState>({
-    username: "yaikohi",
-    description: "",
-    urls: {
-      twitter: "",
-      readcv: "",
-      website: "",
-      github: "",
-    },
+  const { data: userProfile } = api.profiles.getProfileById.useQuery({
+    id: user?.id || "",
   });
 
-  if (!user) return <div>404</div>;
-  if (!loggedInUser) return <div>404</div>;
-
   const { data: postsByUser, isLoading: postsLoading } =
-    api.posts.getPostsById.useQuery({ userId: user?.id });
+    api.posts.getPostsById.useQuery({ userId: user?.id || "" });
+
+  if (!user) return <div>404</div>;
+  if (!loggedInUser) return <div>no loggedin user!</div>;
 
   if (postsLoading) {
     return <LoadingPage />;
@@ -104,84 +73,24 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
                       {"@"}
                       {user.username}
                     </h1>
-                    <p className="text-sm font-light tracking-tight">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Facere nobis dolor laborum alias cupiditate
-                    </p>
-                    <div className="flex flex-row gap-1 overflow-x-auto">
+                    {userProfile && (
+                      <p className="text-sm font-light tracking-tight">
+                        {userProfile.description}
+                      </p>
+                    )}
+                    {/* <div className="flex flex-row gap-1 overflow-x-auto">
                       <Github />
                       <Twitter />
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 
-                {loggedInUserOwnsProfile && (
-                  <Sheet>
-                    <SheetTrigger asChild>
-                      <Button variant={"secondary"} className="rounded-full">
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                    </SheetTrigger>
-                    <SheetContent position="right" size="sm">
-                      <SheetHeader>
-                        <SheetTitle>Edit profile</SheetTitle>
-                        <SheetDescription>
-                          {`Make changes to your profile here. Click save when
-                        you're done.`}
-                        </SheetDescription>
-                      </SheetHeader>
-                      <div className="flex flex-col gap-6 py-4">
-                        <div className="flex flex-col gap-2">
-                          <Label htmlFor="username" className="text-right">
-                            Username
-                          </Label>
-                          <Input
-                            id="username"
-                            value={profile.username}
-                            onChange={(e) =>
-                              setProfile({
-                                ...profile,
-                                username: e.target.value,
-                              })
-                            }
-                            placeholder="@ykhi"
-                          />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <Label htmlFor="description" className="text-right">
-                            Description
-                          </Label>
-                          <Textarea
-                            onChange={(e) =>
-                              setProfile({
-                                ...profile,
-                                description: e.target.value,
-                              })
-                            }
-                            value={profile.description}
-                            id="description"
-                            placeholder="Some description of a maximum of 100 characters."
-                          />
-                        </div>
-                      </div>
-                      <SheetFooter>
-                        <Button
-                          onClick={() =>
-                            mutate(profile)
-                          }
-                          type="submit"
-                        >
-                          Save changes
-                        </Button>
-                      </SheetFooter>
-                    </SheetContent>
-                  </Sheet>
-                )}
+                {loggedInUserOwnsProfile && <ProfileSheet />}
               </div>
             </div>
           </div>
           <div className="mx-auto w-full rounded-xl">
-            <ProfileFeed loggedInUser={loggedInUser} posts={postsByUser} />
+            {/* <ProfileFeed loggedInUser={loggedInUser} posts={postsByUser} /> */}
           </div>
         </div>
       </BaseLayout>
