@@ -35,32 +35,32 @@ model Profile {
     description String @db.VarChar(255)
 
     // urls
-    githubUsername  String?
-    twitterUsername String?
-    websiteUsername String?
-    readcvUsername  String?
+    // githubUsername  String?
+    // twitterUsername String?
+    // websiteUsername String?
+    // readcvUsername  String?
 
-    FollowersOnProfile FollowersOnProfile[]
+    // FollowersOnProfile FollowersOnProfile[]
 
     @@index([authorId])
 }
 
-model FollowersOnProfile {
-    profile    Profile  @relation(fields: [profileId], references: [id])
-    profileId  String
-    follower   Follower @relation(fields: [followerId], references: [id])
-    followerId String
+// model FollowersOnProfile {
+//     profile    Profile  @relation(fields: [profileId], references: [id])
+//     profileId  String
+//     follower   Follower @relation(fields: [followerId], references: [id])
+//     followerId String
 
-    assignedAt DateTime @default(now())
-    assignedBy String
+//     assignedAt DateTime @default(now())
+//     assignedBy String
 
-    @@id([profileId, followerId])
-    @@index([profileId])
-    @@index([followerId])
-}
+//     @@id([profileId, followerId])
+//     @@index([profileId])
+//     @@index([followerId])
+// }
 
-model Follower {
-    id                 String               @id @default(cuid())
-    authorId           String
-    FollowersOnProfile FollowersOnProfile[]
-}
+// model Follower {
+//     id                 String               @id @default(cuid())
+//     authorId           String
+//     FollowersOnProfile FollowersOnProfile[]
+// }
