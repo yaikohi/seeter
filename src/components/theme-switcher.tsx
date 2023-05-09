@@ -9,7 +9,7 @@ export function ThemeSwitcher() {
     <>
       {theme === "dark" && (
         <Button
-          variant={"secondary"}
+          variant={"ghost"}
           onClick={() => {
             toggleTheme();
           }}
@@ -18,7 +18,7 @@ export function ThemeSwitcher() {
         </Button>
       )}
       {theme === "light" && (
-        <Button variant={"secondary"} onClick={() => toggleTheme()}>
+        <Button variant={"ghost"} onClick={() => toggleTheme()}>
           <Sun className="hover:cursor-pointer" />
         </Button>
       )}

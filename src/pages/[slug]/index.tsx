@@ -58,7 +58,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
           <div className="bg-background-100/40 z-50 mx-auto w-full backdrop-blur-xl">
             <div className="flex h-full place-items-end">
               <div className="flex w-full place-items-center justify-between gap-8 bg-background/30 p-8 px-2">
-                <div className="flex place-items-center gap-8">
+                <div className="flex place-items-center gap-4">
                   <Image
                     src={user.profileImageUrl}
                     alt={`${
