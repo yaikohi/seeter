@@ -6,7 +6,6 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { TRPCError } from "@trpc/server";
 
-
 // Create a new ratelimiter, that allows 4 requests per 1 minute
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),

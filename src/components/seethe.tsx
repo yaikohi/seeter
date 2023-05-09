@@ -2,6 +2,7 @@ import type { ComponentProps } from "react";
 import { api, type RouterOutputs } from "~/utils/api";
 import { intlFormatDistance } from "date-fns";
 import Link from "next/link";
+import { SignInButton, type useUser } from "@clerk/nextjs";
 import { LogIn, MoreHorizontal, Trash2, User } from "lucide-react";
 import {
   DropdownMenu,
@@ -10,19 +11,18 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog";
 import type { filterUserForClient } from "~/server/helpers/filterUserForClient";
-import { SignInButton, type useUser } from "@clerk/nextjs";
-import { toast } from "./ui/use-toast";
-import { Button } from "./ui/button";
+import { toast } from "~/components/ui/use-toast";
+import { Button } from "~/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+} from "./ui/alert-dialog";
 
 export type PostGetAllOutput = RouterOutputs["posts"]["getAll"];
 export type LoggedInUser = ReturnType<typeof useUser>["user"];
@@ -59,9 +59,7 @@ export function Seethe(props: SeetheProps) {
   );
 }
 
-interface SeetheDropdownMenuProps extends SeetheProps {
-  ctx: ReturnType<typeof api.useContext>;
-}
+type SeetheDropdownMenuProps = SeetheProps;
 /**
  * The dropdown menu + dialogue modal for a Seethe.
  *
@@ -69,22 +67,32 @@ interface SeetheDropdownMenuProps extends SeetheProps {
  * - user is not logged in
  * - user is logged in + is not Seethe author
  * - user is logged in + is Seethe author
- *
- * TODO: Somehow refactor this?
  */
 export function SeetheDropdownMenu(props: SeetheDropdownMenuProps) {
   const {
-    ctx,
-    post: { authorId, id },
+    post: { authorId },
     loggedInUser,
   } = props;
 
   const isLoggedInUserSeethe = loggedInUser && authorId === loggedInUser.id;
 
+  // hover on component to see context comment.
+  if (isLoggedInUserSeethe) {
+    return <LoggedInUserOwnsSeethe {...props} />;
+  } else if (loggedInUser?.id) {
+    return <LoggedInSeethe />;
+  } else return <LoggedOutSeethe />;
+}
+
+type LoggedInUserOwnsSeetheProps = SeetheDropdownMenuProps;
+/**Signed-in user is author of seethe and can only (for now) delete the Seethe. */
+export const LoggedInUserOwnsSeethe = (props: LoggedInUserOwnsSeetheProps) => {
+  const ctx = api.useContext();
   const { mutate: deleteSeethe } = api.posts.delete.useMutation({
     onSuccess: async () => {
-      toast({ title: "Seethe deleted!" });
-      await ctx.posts.getAll.invalidate();
+      await ctx.posts.getAll
+        .invalidate()
+        .then(() => toast({ title: "Seethe deleted!" }));
     },
     onError: (e) => {
       const errorMessage = e.data?.zodError?.fieldErrors?.content;
@@ -97,62 +105,61 @@ export function SeetheDropdownMenu(props: SeetheDropdownMenuProps) {
     },
   });
 
-  /** User is logged in and is the Seethe author */
-  if (isLoggedInUserSeethe) {
-    return (
-      <Dialog>
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <MoreHorizontal />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent side={"left"}>
-            <DialogTrigger asChild>
-              <DropdownMenuItem className="flex place-items-center gap-2">
-                <Trash2 />
-                <span> Delete</span>
-              </DropdownMenuItem>
-            </DialogTrigger>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Are you sure?</DialogTitle>
-            <DialogDescription>
-              This action cannot be undone. Are you sure you want to permanently
-              delete this seethe from our servers?
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button type="submit" onClick={() => deleteSeethe({ postId: id })}>
-              Delete seethe
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
-  /** User is logged in is not the Seethe author */
-  if (loggedInUser?.id) {
-    return (
+  return (
+    <AlertDialog>
       <DropdownMenu>
         <DropdownMenuTrigger>
           <MoreHorizontal />
         </DropdownMenuTrigger>
         <DropdownMenuContent side={"left"}>
-          <DropdownMenuItem disabled className="flex place-items-center gap-2">
-            <User />
-            <span>Follow</span>
-            <DropdownMenuShortcut className="tracking-tight">
-              Coming soon...
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
+          <AlertDialogTrigger asChild>
+            <DropdownMenuItem className="flex place-items-center gap-2">
+              <Trash2 />
+              <span> Delete</span>
+            </DropdownMenuItem>
+          </AlertDialogTrigger>
         </DropdownMenuContent>
       </DropdownMenu>
-    );
-  }
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. Are you sure you want to permanently
+            delete this seethe from our servers?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <Button onClick={() => deleteSeethe({ postId: props.post.id })}>
+            Delete seethe
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
 
-  /** User is not logged in */
+/** Signed-in user is not the Seethe author; can only 'follow' author of Seethe */
+export const LoggedInSeethe = () => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <MoreHorizontal />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent side={"left"}>
+        <DropdownMenuItem disabled className="flex place-items-center gap-2">
+          <User />
+          <span>Follow</span>
+          <DropdownMenuShortcut className="tracking-tight">
+            Coming soon...
+          </DropdownMenuShortcut>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
+/** User is not logged in; can only 'sign-in'. */
+export const LoggedOutSeethe = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -166,4 +173,4 @@ export function SeetheDropdownMenu(props: SeetheDropdownMenuProps) {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+};

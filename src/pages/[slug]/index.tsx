@@ -10,24 +10,37 @@ import { BaseLayout } from "~/components/base-layout";
 import { LoadingPage } from "~/components/loading-page";
 import { appRouter } from "~/server/api/root";
 import { api } from "~/utils/api";
+import { createServerSideHelpers } from "@trpc/react-query/server";
+import superjson from "superjson";
+import { prisma } from "~/server/db";
+import Image from "next/image";
+import { MainFeed } from "~/components/feed";
+import { useUser } from "@clerk/nextjs";
+// import { ProfileSheet } from "~/components/profile-sheet";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = api.profiles.getUserByUsername.useQuery({
     username,
   });
   const loggedInUser = useUser().user;
-  // const { mutate } = api.profiles.updateProfile.useMutation();
 
-  if (!user) return <div>404</div>;
+  const { data: userProfile } = api.profiles.getProfileById.useQuery({
+    id: user?.id || "",
+  });
 
   const { data: postsByUser, isLoading: postsLoading } =
-    api.posts.getPostsById.useQuery({ userId: user?.id });
+    api.posts.getPostsById.useQuery({ userId: user?.id || "" });
+
+  if (!user) return <div>404</div>;
+  // if (!loggedInUser) return <div>no loggedin user!</div>;
 
   if (postsLoading) {
     return <LoadingPage />;
   }
 
   if (!postsByUser) return <div>404</div>;
+
+  // const loggedInUserOwnsProfile = loggedInUser && loggedInUser.id === user.id;
 
   return (
     <>
@@ -44,38 +57,46 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
           <div className="from-sky/10 absolute inset-0  -z-50 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]  via-blue-200/20 to-violet-300/20 backdrop-blur-3xl"></div>
           <div className="bg-background-100/40 z-50 mx-auto w-full backdrop-blur-xl">
             <div className="flex h-full place-items-end">
-              <div className="flex w-full flex-col place-items-center gap-8 bg-background/30 p-8 px-2">
-                <Image
-                  src={user.profileImageUrl}
-                  alt={`${
-                    user.username ? user.username : username ?? ""
-                  }'s profile picture`}
-                  height={64}
-                  width={64}
-                  className="max-h-[96px] max-w-[96px] rounded-full"
-                />
-                <h1 className="text-xl font-bold tracking-tighter">
-                  {"@"}
-                  {user.username}
-                </h1>
+              <div className="flex w-full place-items-center justify-between gap-8 bg-background/30 p-8 px-2">
+                <div className="flex place-items-center gap-4">
+                  <Image
+                    src={user.profileImageUrl}
+                    alt={`${
+                      user.username ? user.username : username ?? ""
+                    }'s profile picture`}
+                    height={64}
+                    width={64}
+                    className="max-h-[96px] max-w-[96px] rounded-full"
+                  />
+                  <div className="flex max-w-xs flex-col">
+                    <h1 className="text-xl font-bold tracking-tighter">
+                      {"@"}
+                      {user.username}
+                    </h1>
+                    {userProfile && (
+                      <p className="text-sm font-light tracking-tight">
+                        {userProfile.description}
+                      </p>
+                    )}
+                    {/* <div className="flex flex-row gap-1 overflow-x-auto">
+                      <Github />
+                      <Twitter />
+                    </div> */}
+                  </div>
+                </div>
+
+                {/* {loggedInUserOwnsProfile && <ProfileSheet />} */}
               </div>
             </div>
           </div>
           <div className="mx-auto w-full rounded-xl">
-            <ProfileFeed loggedInUser={loggedInUser} posts={postsByUser} />
+            <MainFeed loggedInUser={loggedInUser} posts={postsByUser} />
           </div>
         </div>
       </BaseLayout>
     </>
   );
 };
-
-import { createServerSideHelpers } from "@trpc/react-query/server";
-import superjson from "superjson";
-import { prisma } from "~/server/db";
-import Image from "next/image";
-import { ProfileFeed } from "~/components/feed";
-import { useUser } from "@clerk/nextjs";
 
 export const getStaticProps: GetStaticProps = async (
   context: GetStaticPropsContext
