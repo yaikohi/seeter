@@ -11,18 +11,18 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog";
 import type { filterUserForClient } from "~/server/helpers/filterUserForClient";
 import { toast } from "~/components/ui/use-toast";
 import { Button } from "~/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+} from "./ui/alert-dialog";
 
 export type PostGetAllOutput = RouterOutputs["posts"]["getAll"];
 export type LoggedInUser = ReturnType<typeof useUser>["user"];
@@ -59,9 +59,7 @@ export function Seethe(props: SeetheProps) {
   );
 }
 
-interface SeetheDropdownMenuProps extends SeetheProps {
-  ctx: ReturnType<typeof api.useContext>;
-}
+type SeetheDropdownMenuProps = SeetheProps;
 /**
  * The dropdown menu + dialogue modal for a Seethe.
  *
@@ -89,10 +87,12 @@ export function SeetheDropdownMenu(props: SeetheDropdownMenuProps) {
 type LoggedInUserOwnsSeetheProps = SeetheDropdownMenuProps;
 /**Signed-in user is author of seethe and can only (for now) delete the Seethe. */
 export const LoggedInUserOwnsSeethe = (props: LoggedInUserOwnsSeetheProps) => {
+  const ctx = api.useContext();
   const { mutate: deleteSeethe } = api.posts.delete.useMutation({
     onSuccess: async () => {
-      await props.ctx.posts.getAll.invalidate();
-      toast({ title: "Seethe deleted!" });
+      await ctx.posts.getAll
+        .invalidate()
+        .then(() => toast({ title: "Seethe deleted!" }));
     },
     onError: (e) => {
       const errorMessage = e.data?.zodError?.fieldErrors?.content;
@@ -106,35 +106,35 @@ export const LoggedInUserOwnsSeethe = (props: LoggedInUserOwnsSeetheProps) => {
   });
 
   return (
-    <Dialog>
+    <AlertDialog>
       <DropdownMenu>
         <DropdownMenuTrigger>
           <MoreHorizontal />
         </DropdownMenuTrigger>
         <DropdownMenuContent side={"left"}>
-          <DialogTrigger asChild>
+          <AlertDialogTrigger asChild>
             <DropdownMenuItem className="flex place-items-center gap-2">
               <Trash2 />
               <span> Delete</span>
             </DropdownMenuItem>
-          </DialogTrigger>
+          </AlertDialogTrigger>
         </DropdownMenuContent>
       </DropdownMenu>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Are you sure?</DialogTitle>
-          <DialogDescription>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+          <AlertDialogDescription>
             This action cannot be undone. Are you sure you want to permanently
             delete this seethe from our servers?
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button onClick={() => deleteSeethe({ postId: props.id as string })}>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <Button onClick={() => deleteSeethe({ postId: props.post.id })}>
             Delete seethe
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 

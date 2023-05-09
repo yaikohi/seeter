@@ -14,9 +14,9 @@ import { createServerSideHelpers } from "@trpc/react-query/server";
 import superjson from "superjson";
 import { prisma } from "~/server/db";
 import Image from "next/image";
-// import { ProfileFeed } from "~/components/feed";
+import { MainFeed } from "~/components/feed";
 import { useUser } from "@clerk/nextjs";
-import { ProfileSheet } from "~/components/profile-sheet";
+// import { ProfileSheet } from "~/components/profile-sheet";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = api.profiles.getUserByUsername.useQuery({
@@ -32,7 +32,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
     api.posts.getPostsById.useQuery({ userId: user?.id || "" });
 
   if (!user) return <div>404</div>;
-  if (!loggedInUser) return <div>no loggedin user!</div>;
+  // if (!loggedInUser) return <div>no loggedin user!</div>;
 
   if (postsLoading) {
     return <LoadingPage />;
@@ -40,7 +40,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
 
   if (!postsByUser) return <div>404</div>;
 
-  const loggedInUserOwnsProfile = loggedInUser.id === user.id;
+  // const loggedInUserOwnsProfile = loggedInUser && loggedInUser.id === user.id;
 
   return (
     <>
@@ -85,12 +85,12 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
                   </div>
                 </div>
 
-                {loggedInUserOwnsProfile && <ProfileSheet />}
+                {/* {loggedInUserOwnsProfile && <ProfileSheet />} */}
               </div>
             </div>
           </div>
           <div className="mx-auto w-full rounded-xl">
-            {/* <ProfileFeed loggedInUser={loggedInUser} posts={postsByUser} /> */}
+            <MainFeed loggedInUser={loggedInUser} posts={postsByUser} />
           </div>
         </div>
       </BaseLayout>

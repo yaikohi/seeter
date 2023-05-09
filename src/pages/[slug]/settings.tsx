@@ -81,7 +81,10 @@ const ProfilePage: NextPage = () => {
               <div className="flex flex-col gap-1">
                 <Label htmlFor="website-link">Your website</Label>
                 <div className="flex gap-2">
-                  <Input id="website-link" placeholder="https://your-website.url/" />
+                  <Input
+                    id="website-link"
+                    placeholder="https://your-website.url/"
+                  />
                   <Button>update</Button>
                 </div>
               </div>
