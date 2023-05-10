@@ -4,16 +4,34 @@ export { reportWebVitals } from "next-axiom";
 import "~/styles/globals.css";
 import { api } from "~/utils/api";
 import { Toaster } from "~/components/ui/toaster";
-import { ThemeContextProvider } from "~/components/context/theme";
+import {
+  ThemeContextProvider,
+  useThemeContext,
+} from "~/components/context/theme";
+import { dark } from "@clerk/themes";
+import React from "react";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <ThemeContextProvider>
-      <ClerkProvider {...pageProps}>
+      <ClerkWrapper>
         <Component {...pageProps} />
         <Toaster />
-      </ClerkProvider>
+      </ClerkWrapper>
     </ThemeContextProvider>
+  );
+};
+
+const ClerkWrapper = ({ children }: { children: React.ReactNode }) => {
+  const { theme } = useThemeContext();
+  return (
+    <ClerkProvider
+      appearance={{
+        baseTheme: theme === "dark" ? dark : undefined,
+      }}
+    >
+      {children}
+    </ClerkProvider>
   );
 };
 

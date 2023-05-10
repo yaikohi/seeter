@@ -25,6 +25,7 @@ export function ThemeContextProvider({
   const isClient = useIsClient();
 
   const [theme, setTheme] = React.useState<Themes>("light");
+  
   const isLocalStorageEmpty = isClient && !localStorage.getItem("theme");
 
   React.useEffect(() => {
@@ -42,8 +43,10 @@ export function ThemeContextProvider({
 
   React.useEffect(() => {
     document.body.classList.remove("dark", "light");
-    document.body.classList.add(theme);
+
     localStorage.setItem("theme", theme);
+    /** The type is asserted because we add the theme to `localStorage` one line above here so we know it exists. */
+    document.body.classList.add(localStorage.getItem("theme") as Themes);
   }, [theme]);
 
   function toggleTheme(): void {
