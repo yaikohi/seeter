@@ -16,6 +16,7 @@ import { prisma } from "~/server/db";
 import Image from "next/image";
 import { MainFeed } from "~/components/feed";
 import { useUser } from "@clerk/nextjs";
+import { SeetheCreator } from "~/components/seethe-creator";
 // import { ProfileSheet } from "~/components/profile-sheet";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
@@ -40,7 +41,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
 
   if (!postsByUser) return <div>404</div>;
 
-  // const loggedInUserOwnsProfile = loggedInUser && loggedInUser.id === user.id;
+  const loggedInUserOwnsProfile = loggedInUser && loggedInUser.id === user.id;
 
   return (
     <>
@@ -90,6 +91,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
             </div>
           </div>
           <div className="mx-auto w-full rounded-xl">
+            {loggedInUserOwnsProfile && <SeetheCreator hideAvatar={true} />}
             <MainFeed loggedInUser={loggedInUser} posts={postsByUser} />
           </div>
         </div>
