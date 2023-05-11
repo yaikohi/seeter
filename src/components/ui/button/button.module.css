@@ -1,0 +1,51 @@
+.button--loading {
+  @apply rounded-xl bg-secondary text-secondary-foreground;
+  position: relative;
+}
+.button--loading::before,
+.button--loading::after {
+  @apply -inset-0.5;
+  content: "";
+  position: absolute;
+  border-radius: 0.8rem;
+  z-index: -1;
+  background: conic-gradient(
+    from var(--gradient-angle),
+    transparent,
+    transparent,
+    transparent,
+    transparent,
+    transparent,
+    var(--accent-violet),
+    var(--accent-violet),
+    var(--accent-violet),
+    var(--accent-blue),
+    var(--accent-blue)
+  );
+  animation: rotation 2s linear infinite;
+}
+
+.button--loading::after {
+  filter: blur(3rem);
+}
+
+@keyframes rotation {
+  0% {
+    --gradient-angle: 0deg;
+  }
+  100% {
+    --gradient-angle: 360deg;
+  }
+}
+/* 
+ * The '@property' syntax is not supported in firefox browsers yet.
+ *
+ * More info: 
+ * 1. registerProperty() static method - https://developer.mozilla.org/en-US/docs/Web/API/CSS/registerProperty_static
+ * 2. @property - https://developer.mozilla.org/en-US/docs/Web/CSS/@property
+ */
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}

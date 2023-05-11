@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 @layer base {
+  @property --gradient-angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+  }
+
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 47.4% 11.2%;
@@ -30,6 +36,9 @@
 
     --destructive: 0 100% 50%;
     --destructive-foreground: 210 40% 98%;
+
+    --accent-blue: #60a5fa;
+    --accent-violet: #a78bfa;
 
     --ring: 215 20.2% 65.1%;
 
@@ -64,16 +73,18 @@
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
 
+    --accent-blue: #1e40af;
+    --accent-violet: #5b21b6;
+
     --ring: 216 34% 17%;
 
     --radius: 0.5rem;
   }
-}
 
-@layer base {
   * {
     @apply border-border text-foreground;
   }
+
   body {
     @apply bg-background;
     font-feature-settings: "rlig" 1, "calt" 1;
