@@ -1,12 +1,11 @@
-import { SignIn, SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import type { PropsWithChildren } from "react";
-import { Button } from "./ui/button";
-import { UserNav } from "./user-nav";
-import { Flame } from "lucide-react";
-import Link from "next/link";
 import React from "react";
-import { ThemeSwitcher } from "./theme-switcher";
-
+import Link from "next/link";
+import { SignIn, SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
+import { Button } from "~/components/ui/button";
+import { UserNav } from "~/components/user-nav";
+import { Flame } from "lucide-react";
+import { ThemeSwitcher } from "~/components/theme-switcher";
 
 export const BaseLayout = (props: PropsWithChildren<object>) => {
   return (

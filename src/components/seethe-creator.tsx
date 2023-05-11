@@ -1,10 +1,10 @@
 import { useUser } from "@clerk/nextjs";
-import { useToast } from "./ui/use-toast";
+import { useToast } from "~/components/ui/use-toast";
 import React from "react";
 import { api } from "~/utils/api";
-import { UserProfile } from "./user-profile";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+import { UserProfile } from "~/components/user-profile";
+import { Input } from "~/components/ui/input";
+import { Button } from "~/components/ui/button";
 
 interface SeetheCreatorProps {
   hideAvatar?: boolean;
