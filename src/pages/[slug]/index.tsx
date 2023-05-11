@@ -100,7 +100,7 @@ export const getStaticProps: GetStaticProps = async (
 ) => {
   const ssg = createServerSideHelpers({
     router: appRouter,
-    ctx: { prisma, userId: null },
+    ctx: { prisma, userId: null, userObj: null },
     transformer: superjson,
   });
 
