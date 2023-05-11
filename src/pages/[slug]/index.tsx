@@ -17,9 +17,33 @@ import Image from "next/image";
 import { MainFeed } from "~/components/feed";
 import { useUser } from "@clerk/nextjs";
 import { SeetheCreator } from "~/components/seethe-creator";
-// import { ProfileSheet } from "~/components/profile-sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "~/components/ui/sheet";
+import { Label } from "~/components/ui/label";
+import { Input } from "~/components/ui/input";
+import { Button } from "~/components/ui/button";
+import { Pencil } from "lucide-react";
+import { Textarea } from "~/components/ui/textarea";
+import { toast } from "~/components/ui/use-toast";
 
+type ProfileState = {
+  username?: string;
+  description?: string;
+};
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
+  const [open, setOpen] = React.useState(false);
+  const [profile, setProfile] = React.useState<ProfileState>({
+    username: "",
+    description: "",
+  });
+
   const { data: user } = api.profiles.getUserByUsername.useQuery({
     username,
   });
@@ -32,8 +56,29 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data: postsByUser, isLoading: postsLoading } =
     api.posts.getPostsById.useQuery({ userId: user?.id || "" });
 
+  const ctx = api.useContext();
+
+  const { mutate } = api.profiles.updateProfile.useMutation({
+    onSuccess: async () => {
+      await ctx.profiles.invalidate();
+      toast({ title: "Your profile was updated!" });
+      setProfile({
+        username: "",
+        description: "",
+      });
+    },
+    onError: (e) => {
+      const errorMessage = e.data?.zodError?.fieldErrors?.content;
+
+      if (errorMessage) {
+        return toast({ title: "Error", description: errorMessage[0] });
+      }
+
+      console.log(e.message[0]);
+      return toast({ title: "Error", description: e.message });
+    },
+  });
   if (!user) return <div>404</div>;
-  // if (!loggedInUser) return <div>no loggedin user!</div>;
 
   if (postsLoading) {
     return <LoadingPage />;
@@ -81,7 +126,70 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
                     )}
                   </div>
                 </div>
-                {/* {loggedInUserOwnsProfile && <ProfileSheet />} */}
+                {loggedInUserOwnsProfile && (
+                  <>
+                    <Sheet open={open} onOpenChange={setOpen}>
+                      <SheetTrigger asChild>
+                        <Button variant={"secondary"} className="rounded-full">
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      </SheetTrigger>
+                      <SheetContent position="right" size="sm">
+                        <SheetHeader>
+                          <SheetTitle>Edit profile</SheetTitle>
+                          <SheetDescription>
+                            {`Make changes to your profile here. Click save when you're done.`}
+                          </SheetDescription>
+                        </SheetHeader>
+                        <div className="flex flex-col gap-6 py-4">
+                          <div className="flex flex-col gap-2">
+                            <Label htmlFor="username" className="text-right">
+                              Username
+                            </Label>
+                            <Input
+                              id="username"
+                              value={profile.username}
+                              onChange={(e) =>
+                                setProfile({
+                                  ...profile,
+                                  username: e.target.value,
+                                })
+                              }
+                              placeholder="ykhi"
+                            />
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <Label htmlFor="description" className="text-right">
+                              Description
+                            </Label>
+                            <Textarea
+                              onChange={(e) =>
+                                setProfile({
+                                  ...profile,
+                                  description: e.target.value,
+                                })
+                              }
+                              value={profile.description}
+                              id="description"
+                              placeholder="Some description of a maximum of 100 characters."
+                            />
+                          </div>
+                        </div>
+                        <SheetFooter>
+                          <Button
+                            onClick={() => {
+                              mutate(profile);
+                              setOpen(false);
+                            }}
+                            type="submit"
+                          >
+                            Save changes
+                          </Button>
+                        </SheetFooter>
+                      </SheetContent>
+                    </Sheet>
+                  </>
+                )}
               </div>
             </div>
           </div>
