@@ -79,13 +79,8 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
                         {userProfile.description}
                       </p>
                     )}
-                    {/* <div className="flex flex-row gap-1 overflow-x-auto">
-                      <Github />
-                      <Twitter />
-                    </div> */}
                   </div>
                 </div>
-
                 {/* {loggedInUserOwnsProfile && <ProfileSheet />} */}
               </div>
             </div>
