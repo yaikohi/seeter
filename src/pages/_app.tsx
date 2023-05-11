@@ -10,6 +10,9 @@ import {
 } from "~/components/context/theme";
 import { dark } from "@clerk/themes";
 import React from "react";
+import { Inter } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"] });
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
@@ -30,7 +33,7 @@ const ClerkWrapper = ({ children }: { children: React.ReactNode }) => {
         baseTheme: theme === "dark" ? dark : undefined,
       }}
     >
-      {children}
+      <div className={inter.className}>{children}</div>
     </ClerkProvider>
   );
 };
