@@ -23,6 +23,10 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
 } from "./ui/alert-dialog";
+import {
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@radix-ui/react-alert-dialog";
 
 export type PostGetAllOutput = RouterOutputs["posts"]["getAll"];
 export type LoggedInUser = ReturnType<typeof useUser>["user"];
@@ -88,22 +92,23 @@ type LoggedInUserOwnsSeetheProps = SeetheDropdownMenuProps;
 /**Signed-in user is author of seethe and can only (for now) delete the Seethe. */
 export const LoggedInUserOwnsSeethe = (props: LoggedInUserOwnsSeetheProps) => {
   const ctx = api.useContext();
-  const { mutate: deleteSeethe } = api.posts.delete.useMutation({
-    onSuccess: async () => {
-      await ctx.posts.getAll
-        .invalidate()
-        .then(() => toast({ title: "Seethe deleted!" }));
-    },
-    onError: (e) => {
-      const errorMessage = e.data?.zodError?.fieldErrors?.content;
+  const { mutate: deleteSeethe, isLoading: isDeleting } =
+    api.posts.delete.useMutation({
+      onSuccess: async () => {
+        await ctx.posts.getAll
+          .invalidate()
+          .then(() => toast({ title: "Seethe deleted!" }));
+      },
+      onError: (e) => {
+        const errorMessage = e.data?.zodError?.fieldErrors?.content;
 
-      if (errorMessage) {
-        return toast({ title: "Error", description: errorMessage[0] });
-      }
+        if (errorMessage) {
+          return toast({ title: "Error", description: errorMessage[0] });
+        }
 
-      return toast({ title: "Error", description: e.message });
-    },
-  });
+        return toast({ title: "Error", description: e.message });
+      },
+    });
 
   return (
     <AlertDialog>
@@ -129,9 +134,17 @@ export const LoggedInUserOwnsSeethe = (props: LoggedInUserOwnsSeetheProps) => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <Button onClick={() => deleteSeethe({ postId: props.post.id })}>
-            Delete seethe
-          </Button>
+          <AlertDialogCancel>
+            <Button variant={"secondary"}>Cancel</Button>
+          </AlertDialogCancel>
+          <AlertDialogAction>
+            <Button
+              variant={isDeleting ? "loading" : "default"}
+              onClick={() => deleteSeethe({ postId: props.post.id })}
+            >
+              Delete seethe
+            </Button>
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
