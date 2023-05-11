@@ -63,17 +63,45 @@ export const profileRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { description, username } = input;
 
-      await ctx.prisma.profile.upsert({
-        where: { authorId: ctx.userId },
-        create: {
-          authorId: ctx.userId,
-          description: description || "",
-          username: username || "",
-        },
-        update: {
-          description: description || "",
-          username: username || "",
-        },
-      });
+      if (typeof description === "string" && !username) {
+        await ctx.prisma.profile.upsert({
+          where: { authorId: ctx.userId },
+          create: {
+            authorId: ctx.userId,
+            description: description || "",
+            username: username || "",
+          },
+          update: {
+            description: description,
+          },
+        });
+      }
+      
+      if (typeof username === "string" && !description) {
+        await ctx.prisma.profile.upsert({
+          where: { authorId: ctx.userId },
+          create: {
+            authorId: ctx.userId,
+            description: description || "",
+            username: username || "",
+          },
+          update: {
+            username: username,
+          },
+        });
+      } else {
+        await ctx.prisma.profile.upsert({
+          where: { authorId: ctx.userId },
+          create: {
+            authorId: ctx.userId,
+            description: description || "",
+            username: username || "",
+          },
+          update: {
+            description: description,
+            username: username,
+          },
+        });
+      }
     }),
 });
