@@ -6,14 +6,12 @@ import { Flame } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { ThemeSwitcher } from "./theme-switcher";
-import { Inter } from "next/font/google";
 
-const inter = Inter({ subsets: ["latin"] });
 
 export const BaseLayout = (props: PropsWithChildren<object>) => {
   return (
     <>
-      <main className={`relative ${inter.className}`}>
+      <main className="relative">
         <ThemeSwitcher />
         <div className="absolute inset-0 -z-30 bg-gradient-to-tl from-muted via-blue-200 to-violet-100 blur-3xl dark:via-blue-900 dark:to-violet-900"></div>
         <div className="z-100 m-8 mx-auto rounded-xl bg-background/40 px-4 py-2 shadow-2xl shadow-transparent backdrop-blur-3xl md:max-w-4xl">
