@@ -21,28 +21,17 @@ import {
   Sheet,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "~/components/ui/sheet";
-import { Label } from "~/components/ui/label";
-import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Pencil } from "lucide-react";
-import { Textarea } from "~/components/ui/textarea";
-import { toast } from "~/components/ui/use-toast";
+import { FormUpdateProfile } from "~/components/form-update-profile";
+import { UserProfileHeader } from "~/components/user-profile-header";
 
-type ProfileState = {
-  username?: string;
-  description?: string;
-};
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const [open, setOpen] = React.useState(false);
-  const [profile, setProfile] = React.useState<ProfileState>({
-    username: "",
-    description: "",
-  });
 
   const { data: user } = api.profiles.getUserByUsername.useQuery({
     username,
@@ -56,28 +45,6 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data: postsByUser, isLoading: postsLoading } =
     api.posts.getPostsById.useQuery({ userId: user?.id || "" });
 
-  const ctx = api.useContext();
-
-  const { mutate } = api.profiles.updateProfile.useMutation({
-    onSuccess: async () => {
-      await ctx.profiles.invalidate();
-      toast({ title: "Your profile was updated!" });
-      setProfile({
-        username: "",
-        description: "",
-      });
-    },
-    onError: (e) => {
-      const errorMessage = e.data?.zodError?.fieldErrors?.content;
-
-      if (errorMessage) {
-        return toast({ title: "Error", description: errorMessage[0] });
-      }
-
-      console.log(e.message[0]);
-      return toast({ title: "Error", description: e.message });
-    },
-  });
   if (!user) return <div>404</div>;
 
   if (postsLoading) {
@@ -104,28 +71,11 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
           <div className="bg-background-100/40 z-50 mx-auto w-full backdrop-blur-xl">
             <div className="flex h-full place-items-end">
               <div className="flex w-full place-items-center justify-between gap-8 bg-background/30 p-8 px-2">
-                <div className="flex place-items-center gap-4">
-                  <Image
-                    src={user.profileImageUrl}
-                    alt={`${
-                      user.username ? user.username : username ?? ""
-                    }'s profile picture`}
-                    height={64}
-                    width={64}
-                    className="max-h-[96px] max-w-[96px] rounded-full"
-                  />
-                  <div className="flex max-w-xs flex-col">
-                    <h1 className="text-xl font-bold tracking-tighter">
-                      {"@"}
-                      {user.username}
-                    </h1>
-                    {userProfile && (
-                      <p className="text-sm font-light tracking-tight">
-                        {userProfile.description}
-                      </p>
-                    )}
-                  </div>
-                </div>
+                <UserProfileHeader
+                  username={username}
+                  profileImageUrl={user.profileImageUrl}
+                  profileDescription={userProfile?.description}
+                />
                 {loggedInUserOwnsProfile && (
                   <>
                     <Sheet open={open} onOpenChange={setOpen}>
@@ -134,58 +84,16 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
                           <Pencil className="h-4 w-4" />
                         </Button>
                       </SheetTrigger>
-                      <SheetContent position="right" size="sm">
+                      <SheetContent position="right" size="default">
                         <SheetHeader>
                           <SheetTitle>Edit profile</SheetTitle>
                           <SheetDescription>
                             {`Make changes to your profile here. Click save when you're done.`}
                           </SheetDescription>
                         </SheetHeader>
-                        <div className="flex flex-col gap-6 py-4">
-                          <div className="flex flex-col gap-2">
-                            <Label htmlFor="username" className="text-right">
-                              Username
-                            </Label>
-                            <Input
-                              id="username"
-                              value={profile.username}
-                              onChange={(e) =>
-                                setProfile({
-                                  ...profile,
-                                  username: e.target.value,
-                                })
-                              }
-                              placeholder="ykhi"
-                            />
-                          </div>
-                          <div className="flex flex-col gap-2">
-                            <Label htmlFor="description" className="text-right">
-                              Description
-                            </Label>
-                            <Textarea
-                              onChange={(e) =>
-                                setProfile({
-                                  ...profile,
-                                  description: e.target.value,
-                                })
-                              }
-                              value={profile.description}
-                              id="description"
-                              placeholder="Some description of a maximum of 100 characters."
-                            />
-                          </div>
-                        </div>
-                        <SheetFooter>
-                          <Button
-                            onClick={() => {
-                              mutate(profile);
-                              setOpen(false);
-                            }}
-                            type="submit"
-                          >
-                            Save changes
-                          </Button>
-                        </SheetFooter>
+
+                        {/* Component for updating the profile username and / or description. */}
+                        <FormUpdateProfile />
                       </SheetContent>
                     </Sheet>
                   </>
