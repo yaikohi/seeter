@@ -29,38 +29,24 @@ model Profile {
     id        String   @id @default(cuid())
     authorId  String   @unique
     createdAt DateTime @default(now())
-    updatedAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-    username    String @unique @db.VarChar(255)
-    description String @db.VarChar(255)
+    username    String? @unique @db.VarChar(255)
+    description String? @db.VarChar(255)
 
-    // urls
-    // githubUsername  String?
-    // twitterUsername String?
-    // websiteUsername String?
-    // readcvUsername  String?
-
-    // FollowersOnProfile FollowersOnProfile[]
+    followers Follows[] @relation("following")
+    following Follows[] @relation("follower")
 
     @@index([authorId])
 }
 
-// model FollowersOnProfile {
-//     profile    Profile  @relation(fields: [profileId], references: [id])
-//     profileId  String
-//     follower   Follower @relation(fields: [followerId], references: [id])
-//     followerId String
+model Follows {
+    follower    Profile @relation("follower", fields: [followerId], references: [id])
+    followerId  String
+    following   Profile @relation("following", fields: [followingId], references: [id])
+    followingId String
 
-//     assignedAt DateTime @default(now())
-//     assignedBy String
-
-//     @@id([profileId, followerId])
-//     @@index([profileId])
-//     @@index([followerId])
-// }
-
-// model Follower {
-//     id                 String               @id @default(cuid())
-//     authorId           String
-//     FollowersOnProfile FollowersOnProfile[]
-// }
+    @@id([followerId, followingId])
+    @@index([followingId])
+    @@index([followerId])
+}
