@@ -32,20 +32,18 @@ import { toast } from "~/components/ui/use-toast";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const [open, setOpen] = React.useState(false);
+  const { user: loggedInUser, isSignedIn } = useUser();
+  const ctx = api.useContext();
 
   const { data: user } = api.profiles.getUserByUsername.useQuery({
     username,
   });
-  const { user: loggedInUser, isSignedIn } = useUser();
-
   const { data: userProfile } = api.profiles.getProfileById.useQuery({
     id: user?.id || "",
   });
-
   const { data: postsByUser, isLoading: postsLoading } =
     api.posts.getPostsById.useQuery({ userId: user?.id || "" });
 
-  const ctx = api.useContext();
   const { mutate: followProfile } = api.profiles.followProfile.useMutation({
     onSuccess: async () => {
       await ctx.profiles.invalidate();
