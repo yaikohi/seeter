@@ -1,7 +1,9 @@
+import "~/styles/globals.css";
+
+import React from "react";
 import { type AppType } from "next/app";
 import { ClerkProvider } from "@clerk/nextjs";
 export { reportWebVitals } from "next-axiom";
-import "~/styles/globals.css";
 import { api } from "~/utils/api";
 import { Toaster } from "~/components/ui/toaster";
 import {
@@ -9,19 +11,15 @@ import {
   useThemeContext,
 } from "~/components/context/theme";
 import { dark } from "@clerk/themes";
-import React from "react";
-import { Inter } from "next/font/google";
-
-const inter = Inter({ subsets: ["latin"] });
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <ThemeContextProvider>
-      <ClerkWrapper>
-        <Component {...pageProps} />
-        <Toaster />
-      </ClerkWrapper>
-    </ThemeContextProvider>
+      <ThemeContextProvider>
+        <ClerkWrapper>
+          <Component {...pageProps} />
+          <Toaster />
+        </ClerkWrapper>
+      </ThemeContextProvider>
   );
 };
 
@@ -33,7 +31,7 @@ const ClerkWrapper = ({ children }: { children: React.ReactNode }) => {
         baseTheme: theme === "dark" ? dark : undefined,
       }}
     >
-      <div className={inter.className}>{children}</div>
+      {children}
     </ClerkProvider>
   );
 };
