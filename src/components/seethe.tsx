@@ -2,7 +2,7 @@ import type { ComponentProps } from "react";
 import { api, type RouterOutputs } from "~/utils/api";
 import { intlFormatDistance } from "date-fns";
 import Link from "next/link";
-import { SignInButton, type useUser } from "@clerk/nextjs";
+import { SignInButton, useUser } from "@clerk/nextjs";
 import { LogIn, MoreHorizontal, Trash2, User } from "lucide-react";
 import {
   DropdownMenu,
@@ -13,7 +13,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 import type { filterUserForClient } from "~/server/helpers/filterUserForClient";
 import { toast } from "~/components/ui/use-toast";
-import { Button } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -27,6 +27,7 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from "@radix-ui/react-alert-dialog";
+import { useRouter } from "next/router";
 
 export type PostGetAllOutput = RouterOutputs["posts"]["getAll"];
 export type LoggedInUser = ReturnType<typeof useUser>["user"];
@@ -78,8 +79,7 @@ export function SeetheDropdownMenu(props: SeetheDropdownMenuProps) {
     loggedInUser,
   } = props;
 
-  const isLoggedInUserSeethe = loggedInUser && authorId === loggedInUser.id;
-
+  const isLoggedInUserSeethe = loggedInUser?.id && authorId === loggedInUser.id;
   // hover on component to see context comment.
   if (isLoggedInUserSeethe) {
     return <LoggedInUserOwnsSeethe {...props} />;
@@ -90,14 +90,28 @@ export function SeetheDropdownMenu(props: SeetheDropdownMenuProps) {
 
 type LoggedInUserOwnsSeetheProps = SeetheDropdownMenuProps;
 /**Signed-in user is author of seethe and can only (for now) delete the Seethe. */
-export const LoggedInUserOwnsSeethe = (props: LoggedInUserOwnsSeetheProps) => {
+export const LoggedInUserOwnsSeethe = ({
+  loggedInUser,
+  post,
+}: LoggedInUserOwnsSeetheProps) => {
   const ctx = api.useContext();
+  const pageUser = useRouter().asPath.replace("/@", "")
+
+  const loggedInUserOwnsProfile =
+    loggedInUser && loggedInUser.username === pageUser;
+
   const { mutate: deleteSeethe, isLoading: isDeleting } =
     api.posts.delete.useMutation({
       onSuccess: async () => {
-        await ctx.posts.getAll
-          .invalidate()
-          .then(() => toast({ title: "Seethe deleted!" }));
+        if (loggedInUserOwnsProfile) {
+          await ctx.posts.getPostsById
+            .invalidate({ userId: loggedInUser.id })
+            .then(() => toast({ title: "Seethe deleted!" }));
+        } else {
+          await ctx.posts.getAll
+            .invalidate()
+            .then(() => toast({ title: "Seethe deleted!" }));
+        }
       },
       onError: (e) => {
         const errorMessage = e.data?.zodError?.fieldErrors?.content;
@@ -134,16 +148,18 @@ export const LoggedInUserOwnsSeethe = (props: LoggedInUserOwnsSeetheProps) => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>
-            <Button variant={"secondary"}>Cancel</Button>
+          <AlertDialogCancel
+            className={buttonVariants({ variant: "secondary" })}
+          >
+            Cancel
           </AlertDialogCancel>
-          <AlertDialogAction>
-            <Button
-              variant={isDeleting ? "loading" : "default"}
-              onClick={() => deleteSeethe({ postId: props.post.id })}
-            >
-              Delete seethe
-            </Button>
+          <AlertDialogAction
+            className={buttonVariants({
+              variant: isDeleting ? "loading" : "default",
+            })}
+            onClick={() => deleteSeethe({ postId: post.id })}
+          >
+            Delete seethe
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

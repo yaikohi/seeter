@@ -76,7 +76,7 @@ export const profileRouter = createTRPCRouter({
           },
         });
       }
-      
+
       if (typeof username === "string" && !description) {
         await ctx.prisma.profile.upsert({
           where: { authorId: ctx.userId },
@@ -103,5 +103,27 @@ export const profileRouter = createTRPCRouter({
           },
         });
       }
+    }),
+  followProfile: privateProcedure
+    .input(z.object({ userToFollowId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { userToFollowId } = input;
+      console.dir({ userId: ctx.userId, userToFollowId });
+      await ctx.prisma.profile.update({
+        where: {
+          authorId: ctx.userId,
+        },
+        data: {
+          following: {
+            create: {
+              following: {
+                connect: {
+                  authorId: userToFollowId,
+                },
+              },
+            },
+          },
+        },
+      });
     }),
 });

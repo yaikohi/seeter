@@ -1,6 +1,7 @@
+import React from "react";
+import { useRouter } from "next/router";
 import { useUser } from "@clerk/nextjs";
 import { useToast } from "~/components/ui/use-toast";
-import React from "react";
 import { api } from "~/utils/api";
 import { UserProfile } from "~/components/user-profile";
 import { Input } from "~/components/ui/input";
@@ -16,11 +17,20 @@ export function SeetheCreator({ hideAvatar }: SeetheCreatorProps) {
 
   const ctx = api.useContext();
 
+  /** Checks whether the url contains a username */
+  const routeUsername = useRouter().asPath.replace("/@", "");
+
   const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
     onSuccess: async () => {
-      toast({ title: "Seethed!" });
-      setInput("");
-      await ctx.posts.getAll.invalidate();
+      if (user?.username === routeUsername) {
+        await ctx.posts.getPostsById.invalidate({ userId: user?.id });
+        setInput("");
+        toast({ title: "Seethed!" });
+      } else {
+        await ctx.posts.getAll.invalidate();
+        setInput("");
+        toast({ title: "Seethed!" });
+      }
     },
     onError: (e) => {
       const errorMessage = e.data?.zodError?.fieldErrors?.content;
@@ -57,9 +67,9 @@ export function SeetheCreator({ hideAvatar }: SeetheCreatorProps) {
             )}
             <div className="flex gap-2">{/* Icons can be put here */}</div>
             <Button
-              disabled={input === "" || input.length > 100}
+              // disabled={input === "" || input.length > 100}
               className="max-w-[72px] rounded-full"
-              variant={"default"}
+              variant={isPosting ? "loading" : "default"}
               onClick={() => mutate({ content: input })}
             >
               seethe

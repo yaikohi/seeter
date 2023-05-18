@@ -13,8 +13,7 @@ import { api } from "~/utils/api";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import superjson from "superjson";
 import { prisma } from "~/server/db";
-import Image from "next/image";
-import { MainFeed } from "~/components/feed";
+import { ProfileFeed } from "~/components/feed";
 import { useUser } from "@clerk/nextjs";
 import { SeetheCreator } from "~/components/seethe-creator";
 import {
@@ -29,6 +28,7 @@ import { Button } from "~/components/ui/button";
 import { Pencil } from "lucide-react";
 import { FormUpdateProfile } from "~/components/form-update-profile";
 import { UserProfileHeader } from "~/components/user-profile-header";
+import { toast } from "~/components/ui/use-toast";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const [open, setOpen] = React.useState(false);
@@ -36,7 +36,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data: user } = api.profiles.getUserByUsername.useQuery({
     username,
   });
-  const loggedInUser = useUser().user;
+  const { user: loggedInUser, isSignedIn } = useUser();
 
   const { data: userProfile } = api.profiles.getProfileById.useQuery({
     id: user?.id || "",
@@ -44,6 +44,14 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
 
   const { data: postsByUser, isLoading: postsLoading } =
     api.posts.getPostsById.useQuery({ userId: user?.id || "" });
+
+  const ctx = api.useContext();
+  const { mutate: followProfile } = api.profiles.followProfile.useMutation({
+    onSuccess: async () => {
+      await ctx.profiles.invalidate();
+      toast({ title: "Followed!" });
+    },
+  });
 
   if (!user) return <div>404</div>;
 
@@ -53,7 +61,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
 
   if (!postsByUser) return <div>404</div>;
 
-  const loggedInUserOwnsProfile = loggedInUser && loggedInUser.id === user.id;
+  const loggedInUserOwnsProfile = isSignedIn && loggedInUser.id === user.id;
 
   return (
     <>
@@ -98,12 +106,27 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
                     </Sheet>
                   </>
                 )}
+
+                {isSignedIn && !loggedInUserOwnsProfile && (
+                  <>
+                    <Button
+                      onClick={() => {
+                        followProfile({
+                          userToFollowId: user.id,
+                        });
+                        console.log("followed!");
+                      }}
+                    >
+                      follow
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>
           <div className="mx-auto w-full rounded-xl">
             {loggedInUserOwnsProfile && <SeetheCreator hideAvatar={true} />}
-            <MainFeed loggedInUser={loggedInUser} posts={postsByUser} />
+            <ProfileFeed />
           </div>
         </div>
       </BaseLayout>

@@ -1,22 +1,17 @@
-import type { ComponentProps } from "react";
 import { Fade } from "react-awesome-reveal";
-import { type RouterOutputs, api } from "~/utils/api";
-import type { filterUserForClient } from "~/server/helpers/filterUserForClient";
+import { api } from "~/utils/api";
 
-import { type LoggedInUser, Seethe, SeetheDropdownMenu } from "./seethe";
-
-interface MainFeedProps extends ComponentProps<"div"> {
-  posts: RouterOutputs["posts"]["getAll"];
-  loggedInUser: LoggedInUser | ReturnType<typeof filterUserForClient>;
-}
+import { Seethe, SeetheDropdownMenu } from "./seethe";
+import { useUser } from "@clerk/nextjs";
 
 /**
  * A feed of various Seethes.
  *
  * Can contain 'all' seethes or an individuals' specific seethes.
  */
-export function MainFeed(props: MainFeedProps) {
-  const { posts, loggedInUser } = props;
+export function MainFeed() {
+  const { user: loggedInUser } = useUser();
+  const { data: posts } = api.posts.getAll.useQuery();
 
   return (
     <div className="my-8 flex flex-col gap-2 rounded-xl bg-background/30 p-2 ">
@@ -34,34 +29,30 @@ export function MainFeed(props: MainFeedProps) {
   );
 }
 
-// interface ProfileFeedProps {
-//   posts: RouterOutputs["posts"]["getAll"];
-//   loggedInUser: LoggedInUser | ReturnType<typeof filterUserForClient>;
-// }
+/** The feed that shoes on a user profile. */
+export function ProfileFeed() {
+  const { user: loggedInUser } = useUser();
 
-// export function ProfileFeed(props: ProfileFeedProps) {
-//   const { posts, loggedInUser, ...rest } = props;
-//   const ctx = api.useContext();
+  if (!loggedInUser || !loggedInUser.id) {
+    return <p>Not logged in.</p>;
+  }
 
-//   return (
-//     <div
-//       className="my-8 flex flex-col gap-2 rounded-xl bg-background/30 p-2"
-//       {...rest}
-//     >
-//       <h2>Seethes</h2>
-//       {posts?.map((post) => {
-//         return (
-//           <Fade key={post.id} damping={20}>
-//             <Seethe key={post.id} post={post} loggedInUser={loggedInUser}>
-//               <SeetheDropdownMenu
-//                 loggedInUser={loggedInUser}
-//                 post={post}
-//                 ctx={ctx}
-//               />
-//             </Seethe>
-//           </Fade>
-//         );
-//       })}
-//     </div>
-//   );
-// }
+  const { data: posts } = api.posts.getPostsById.useQuery({
+    userId: loggedInUser?.id,
+  });
+
+  return (
+    <div className="my-8 flex flex-col gap-2 rounded-xl bg-background/30 p-2 ">
+      <h2>Seethes</h2>
+      {posts?.map((post) => {
+        return (
+          <Fade key={post.id} damping={20}>
+            <Seethe post={post} loggedInUser={loggedInUser}>
+              <SeetheDropdownMenu loggedInUser={loggedInUser} post={post} />
+            </Seethe>
+          </Fade>
+        );
+      })}
+    </div>
+  );
+}
