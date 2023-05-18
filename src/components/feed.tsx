@@ -1,5 +1,5 @@
 import { Fade } from "react-awesome-reveal";
-import { api } from "~/utils/api";
+import { type RouterOutputs, api } from "~/utils/api";
 
 import { Seethe, SeetheDropdownMenu } from "./seethe";
 import { useUser } from "@clerk/nextjs";
@@ -29,8 +29,12 @@ export function MainFeed() {
   );
 }
 
+interface ProfileFeedProps {
+  pageUser: RouterOutputs["profiles"]["getUserByUsername"];
+}
+
 /** The feed that shoes on a user profile. */
-export function ProfileFeed() {
+export function ProfileFeed({ pageUser }: ProfileFeedProps) {
   const { user: loggedInUser } = useUser();
 
   if (!loggedInUser || !loggedInUser.id) {
@@ -38,7 +42,7 @@ export function ProfileFeed() {
   }
 
   const { data: posts } = api.posts.getPostsById.useQuery({
-    userId: loggedInUser?.id,
+    userId: pageUser?.id,
   });
 
   return (

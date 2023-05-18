@@ -124,7 +124,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
           </div>
           <div className="mx-auto w-full rounded-xl">
             {loggedInUserOwnsProfile && <SeetheCreator hideAvatar={true} />}
-            <ProfileFeed />
+            <ProfileFeed pageUser={user}/>
           </div>
         </div>
       </BaseLayout>
