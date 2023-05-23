@@ -14,15 +14,16 @@ import { dark } from "@clerk/themes";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-      <ThemeContextProvider>
-        <ClerkWrapper>
-          <Component {...pageProps} />
-          <Toaster />
-        </ClerkWrapper>
-      </ThemeContextProvider>
+    <ThemeContextProvider>
+      <ClerkWrapper>
+        <Component {...pageProps} />
+        <Toaster />
+      </ClerkWrapper>
+    </ThemeContextProvider>
   );
 };
 
+/** To force the theme on clerk components as well. */
 const ClerkWrapper = ({ children }: { children: React.ReactNode }) => {
   const { theme } = useThemeContext();
   return (
