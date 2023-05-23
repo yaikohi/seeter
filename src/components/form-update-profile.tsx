@@ -1,19 +1,16 @@
 import React from "react";
 import { Label } from "~/components/ui/label";
-import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
 import { api } from "~/utils/api";
 import { toast } from "./ui/use-toast";
 
 type ProfileState = {
-  username?: string;
   description?: string;
 };
 
 export function FormUpdateProfile() {
   const [profile, setProfile] = React.useState<ProfileState>({
-    username: "",
     description: "",
   });
 
@@ -24,7 +21,6 @@ export function FormUpdateProfile() {
       await ctx.profiles.invalidate();
       toast({ title: "Your profile was updated!" });
       setProfile({
-        username: "",
         description: "",
       });
     },
@@ -42,22 +38,6 @@ export function FormUpdateProfile() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="description" className="text-right">
-          Username
-        </Label>
-        <Input
-          id="username"
-          placeholder="ykhi"
-          onChange={(e) =>
-            setProfile({
-              ...profile,
-              username: e.currentTarget.value,
-            })
-          }
-          value={profile.username}
-        />
-      </div>
       <div className="flex flex-col gap-2">
         <Label htmlFor="description" className="text-right">
           Description
