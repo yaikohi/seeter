@@ -16,47 +16,22 @@ import { prisma } from "~/server/db";
 import { ProfileFeed } from "~/components/feed";
 import { useUser } from "@clerk/nextjs";
 import { SeetheCreator } from "~/components/seethe-creator";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "~/components/ui/sheet";
-import { Button } from "~/components/ui/button";
-import { Pencil } from "lucide-react";
-import { FormUpdateProfile } from "~/components/form-update-profile";
+
 import { UserProfileHeader } from "~/components/user-profile-header";
-import { toast } from "~/components/ui/use-toast";
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
-  const [open, setOpen] = React.useState(false);
-  const { user: loggedInUser, isSignedIn } = useUser();
-  const ctx = api.useContext();
-
   const { data: user } = api.profiles.getUserByUsername.useQuery({
     username,
   });
-  const { data: userProfile } = api.profiles.getProfileById.useQuery({
-    id: user?.id || "",
-  });
+
   const { data: postsByUser, isLoading: postsLoading } =
     api.posts.getPostsById.useQuery({ userId: user?.id || "" });
 
-  const { mutate: followProfile } = api.profiles.followProfile.useMutation({
-    onSuccess: async () => {
-      await ctx.profiles.invalidate();
-      toast({ title: "Followed!" });
-    },
-  });
+  const { user: loggedInUser, isSignedIn } = useUser();
+
+  if (postsLoading) return <LoadingPage />;
 
   if (!user) return <div>404</div>;
-
-  if (postsLoading) {
-    return <LoadingPage />;
-  }
-
   if (!postsByUser) return <div>404</div>;
 
   const loggedInUserOwnsProfile = isSignedIn && loggedInUser.id === user.id;
@@ -76,55 +51,16 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
           <div className="from-sky/10 absolute inset-0  -z-50 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]  via-blue-200/20 to-violet-300/20 backdrop-blur-3xl"></div>
           <div className="bg-background-100/40 z-50 mx-auto w-full backdrop-blur-xl">
             <div className="flex h-full place-items-end">
-              <div className="flex w-full place-items-center justify-between gap-8 bg-background/30 p-8 px-2">
-                <UserProfileHeader
-                  username={username}
-                  profileImageUrl={user.profileImageUrl}
-                  profileDescription={userProfile?.description}
-                />
-                {loggedInUserOwnsProfile && (
-                  <>
-                    <Sheet open={open} onOpenChange={setOpen}>
-                      <SheetTrigger asChild>
-                        <Button variant={"secondary"} className="rounded-full">
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                      </SheetTrigger>
-                      <SheetContent position="right" size="default">
-                        <SheetHeader>
-                          <SheetTitle>Edit profile</SheetTitle>
-                          <SheetDescription>
-                            {`Make changes to your profile here. Click save when you're done.`}
-                          </SheetDescription>
-                        </SheetHeader>
-
-                        {/* Component for updating the profile username and / or description. */}
-                        <FormUpdateProfile />
-                      </SheetContent>
-                    </Sheet>
-                  </>
-                )}
-
-                {isSignedIn && !loggedInUserOwnsProfile && (
-                  <>
-                    <Button
-                      onClick={() => {
-                        followProfile({
-                          userToFollowId: user.id,
-                        });
-                        console.log("followed!");
-                      }}
-                    >
-                      follow
-                    </Button>
-                  </>
-                )}
-              </div>
+              <UserProfileHeader
+                user={user}
+                username={username}
+                profileImageUrl={user.profileImageUrl}
+              />
             </div>
           </div>
           <div className="mx-auto w-full rounded-xl">
             {loggedInUserOwnsProfile && <SeetheCreator hideAvatar={true} />}
-            <ProfileFeed pageUser={user}/>
+            <ProfileFeed pageUser={user} />
           </div>
         </div>
       </BaseLayout>
