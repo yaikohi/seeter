@@ -56,7 +56,7 @@ export function UserSignedInHeader() {
     <div className="flex justify-between">
       <Flame className="invisible" />
       <Link href="/">
-        <Flame className="place-self-center" />
+        <Flame className="place-self-center" aria-label="Go to the home page" />
       </Link>
       <UserNav />
     </div>

@@ -14,12 +14,18 @@ export function ThemeSwitcher() {
             toggleTheme();
           }}
         >
-          <Moon className="hover:cursor-pointer" />
+          <Moon
+            className="hover:cursor-pointer"
+            aria-label="Change to light mode"
+          />
         </Button>
       )}
       {theme === "light" && (
         <Button variant={"ghost"} onClick={() => toggleTheme()}>
-          <Sun className="hover:cursor-pointer" />
+          <Sun
+            className="hover:cursor-pointer"
+            aria-label="Change to dark mode"
+          />
         </Button>
       )}
     </>

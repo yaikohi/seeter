@@ -127,7 +127,7 @@ export const LoggedInUserOwnsSeethe = ({
   return (
     <AlertDialog>
       <DropdownMenu>
-        <DropdownMenuTrigger>
+        <DropdownMenuTrigger aria-label="Open seethe options" title="Seethe options">
           <MoreHorizontal />
         </DropdownMenuTrigger>
         <DropdownMenuContent side={"left"}>

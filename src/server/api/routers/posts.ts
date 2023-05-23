@@ -81,10 +81,9 @@ export const postsRouter = createTRPCRouter({
     .input(z.object({ content: z.string().min(1).max(100) }))
     .mutation(async ({ ctx, input }) => {
       const authorId = ctx.userId;
-      const { success, remaining, reset } = await ratelimit.limit(authorId);
+      const { success } = await ratelimit.limit(authorId);
 
       if (!success) {
-        console.dir({ authorId, remaining, reset });
         throw new TRPCError({
           code: "TOO_MANY_REQUESTS",
           message: "The limit for seething is 4 requests per minute.",

@@ -31,7 +31,6 @@ export function FormUpdateProfile() {
         return toast({ title: "Error", description: errorMessage[0] });
       }
 
-      console.log(e.message[0]);
       return toast({ title: "Error", description: e.message });
     },
   });
