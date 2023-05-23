@@ -4,8 +4,8 @@ import { useUser } from "@clerk/nextjs";
 import { useToast } from "~/components/ui/use-toast";
 import { api } from "~/utils/api";
 import { UserProfile } from "~/components/user-profile";
-import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
+import { Textarea } from "~/components/ui/textarea";
 
 interface SeetheCreatorProps {
   hideAvatar?: boolean;
@@ -51,11 +51,10 @@ export function SeetheCreator({ hideAvatar }: SeetheCreatorProps) {
         {!hideAvatar && <UserProfile imgUrl={user.profileImageUrl} />}
 
         <div className="flex max-w-[50rem] flex-grow flex-col gap-2">
-          <Input
+          <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="What's up?"
-            type="text"
             disabled={isPosting}
           />
 
@@ -67,7 +66,7 @@ export function SeetheCreator({ hideAvatar }: SeetheCreatorProps) {
             )}
             <div className="flex gap-2">{/* Icons can be put here */}</div>
             <Button
-              // disabled={input === "" || input.length > 100}
+              disabled={input === "" || input.length > 100}
               className="max-w-[72px] rounded-full"
               variant={isPosting ? "loading" : "default"}
               onClick={() => mutate({ content: input })}
