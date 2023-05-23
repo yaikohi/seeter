@@ -37,10 +37,6 @@ interface ProfileFeedProps {
 export function ProfileFeed({ pageUser }: ProfileFeedProps) {
   const { user: loggedInUser } = useUser();
 
-  if (!loggedInUser || !loggedInUser.id) {
-    return <p>Not logged in.</p>;
-  }
-
   const { data: posts } = api.posts.getPostsById.useQuery({
     userId: pageUser?.id,
   });

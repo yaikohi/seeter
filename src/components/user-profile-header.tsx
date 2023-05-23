@@ -124,33 +124,37 @@ export function UserProfileHeader({
         </>
       )}
 
-      {!loggedInUserOwnsProfile && !profileIsFollowedByLoggedInUser && (
-        <>
-          <Button
-            onClick={() => {
-              followProfile({
-                userToFollowId: user.id || "",
-              });
-            }}
-          >
-            follow
-          </Button>
-        </>
-      )}
-      {!loggedInUserOwnsProfile && profileIsFollowedByLoggedInUser && (
-        <>
-          <Button
-            onClick={() => {
-              unFollowProfile({
-                userToUnfollowId: user.id || "",
-              });
-            }}
-            variant={"secondary"}
-          >
-            unfollow
-          </Button>
-        </>
-      )}
+      {isSignedIn &&
+        !loggedInUserOwnsProfile &&
+        !profileIsFollowedByLoggedInUser && (
+          <>
+            <Button
+              onClick={() => {
+                followProfile({
+                  userToFollowId: user.id || "",
+                });
+              }}
+            >
+              follow
+            </Button>
+          </>
+        )}
+      {isSignedIn &&
+        !loggedInUserOwnsProfile &&
+        profileIsFollowedByLoggedInUser && (
+          <>
+            <Button
+              onClick={() => {
+                unFollowProfile({
+                  userToUnfollowId: user.id || "",
+                });
+              }}
+              variant={"secondary"}
+            >
+              unfollow
+            </Button>
+          </>
+        )}
     </div>
   );
 }
