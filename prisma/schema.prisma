@@ -31,22 +31,10 @@ model Profile {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    username    String? @unique @db.VarChar(255)
     description String? @db.VarChar(255)
 
-    followers Follows[] @relation("following")
-    following Follows[] @relation("follower")
+    followedBy Profile[] @relation("UserFollows")
+    following  Profile[] @relation("UserFollows")
 
     @@index([authorId])
-}
-
-model Follows {
-    follower    Profile @relation("follower", fields: [followerId], references: [id])
-    followerId  String
-    following   Profile @relation("following", fields: [followingId], references: [id])
-    followingId String
-
-    @@id([followerId, followingId])
-    @@index([followingId])
-    @@index([followerId])
 }
