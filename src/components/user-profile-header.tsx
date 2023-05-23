@@ -17,6 +17,7 @@ import { toast } from "~/components/ui/use-toast";
 import React from "react";
 import { useUser } from "@clerk/nextjs";
 import { LoadingSpinner } from "./ui/loading-spinner";
+import { Profile } from "@prisma/client";
 interface UserProfileHeaderProps {
   username: string;
   user: RouterOutputs["profiles"]["getUserByUsername"];
@@ -62,16 +63,10 @@ export function UserProfileHeader({
   const followedByCount: number = userProfile?.followedBy.length;
 
   const profileIsFollowedByLoggedInUser =
-    userProfile.followedBy.filter(
+    loggedInUser &&
+    (userProfile?.followedBy as Profile[]).filter(
       (profile) => profile.authorId === loggedInUser.id
     ).length === 1;
-
-  console.log(
-    "profileIsFollowedByLoggedInUser",
-    profileIsFollowedByLoggedInUser
-  );
-
-  console.log({ followedByCount, followingCount });
   return (
     <div className="mx-auto flex w-full place-items-center justify-between gap-8 rounded-xl bg-background/30 p-8">
       <div className="flex flex-col gap-4">
@@ -129,7 +124,7 @@ export function UserProfileHeader({
         </>
       )}
 
-      {!profileIsFollowedByLoggedInUser && (
+      {!loggedInUserOwnsProfile && !profileIsFollowedByLoggedInUser && (
         <>
           <Button
             onClick={() => {
@@ -142,7 +137,7 @@ export function UserProfileHeader({
           </Button>
         </>
       )}
-      {profileIsFollowedByLoggedInUser && (
+      {!loggedInUserOwnsProfile && profileIsFollowedByLoggedInUser && (
         <>
           <Button
             onClick={() => {
