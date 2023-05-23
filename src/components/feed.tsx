@@ -3,6 +3,7 @@ import { type RouterOutputs, api } from "~/utils/api";
 
 import { Seethe, SeetheDropdownMenu } from "./seethe";
 import { useUser } from "@clerk/nextjs";
+import { LoadingSpinner } from "./ui/loading-spinner";
 
 /**
  * A feed of various Seethes.
@@ -11,20 +12,24 @@ import { useUser } from "@clerk/nextjs";
  */
 export function MainFeed() {
   const { user: loggedInUser } = useUser();
-  const { data: posts } = api.posts.getAll.useQuery();
+  const { data: posts, isLoading: postsLoading } = api.posts.getAll.useQuery();
 
   return (
     <div className="my-8 flex flex-col gap-2 rounded-xl bg-background/30 p-2 ">
       <h2>Seethes</h2>
-      {posts?.map((post) => {
-        return (
-          <Fade key={post.id} damping={20}>
-            <Seethe post={post} loggedInUser={loggedInUser}>
-              <SeetheDropdownMenu loggedInUser={loggedInUser} post={post} />
-            </Seethe>
-          </Fade>
-        );
-      })}
+
+      {postsLoading && <LoadingSpinner />}
+
+      {posts &&
+        posts?.map((post) => {
+          return (
+            <Fade key={post.id} damping={20}>
+              <Seethe post={post} loggedInUser={loggedInUser}>
+                <SeetheDropdownMenu loggedInUser={loggedInUser} post={post} />
+              </Seethe>
+            </Fade>
+          );
+        })}
     </div>
   );
 }
@@ -37,22 +42,27 @@ interface ProfileFeedProps {
 export function ProfileFeed({ pageUser }: ProfileFeedProps) {
   const { user: loggedInUser } = useUser();
 
-  const { data: posts } = api.posts.getPostsById.useQuery({
-    userId: pageUser?.id,
-  });
+  const { data: posts, isLoading: postsLoading } =
+    api.posts.getPostsById.useQuery({
+      userId: pageUser?.id,
+    });
 
   return (
     <div className="my-8 flex flex-col gap-2 rounded-xl bg-background/30 p-2 ">
       <h2>Seethes</h2>
-      {posts?.map((post) => {
-        return (
-          <Fade key={post.id} damping={20}>
-            <Seethe post={post} loggedInUser={loggedInUser}>
-              <SeetheDropdownMenu loggedInUser={loggedInUser} post={post} />
-            </Seethe>
-          </Fade>
-        );
-      })}
+
+      {postsLoading && <LoadingSpinner />}
+
+      {posts &&
+        posts?.map((post) => {
+          return (
+            <Fade key={post.id} damping={20}>
+              <Seethe post={post} loggedInUser={loggedInUser}>
+                <SeetheDropdownMenu loggedInUser={loggedInUser} post={post} />
+              </Seethe>
+            </Fade>
+          );
+        })}
     </div>
   );
 }
