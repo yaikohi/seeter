@@ -1,14 +1,15 @@
-import { TRPCError } from "@trpc/server";
-import { getHTTPStatusCodeFromError } from "@trpc/server/http";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { Webhook } from "svix";
-// const exampleHeaders = {
-//   "svix-id": "msg_p5jXN8AQM9LWM0D4loKWxJek",
-//   "svix-timestamp": "1614265330",
-//   "svix-signature": "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=",
-// };
+import { prisma } from "~/server/db";
+import type {
+  SessionCreatedPayload,
+  UserCreatedPayload,
+  UserUpdatedPayload,
+  WebhookPayload,
+} from "~/types/Webhook";
 
-const webhookVerifier = () => {
+/** Ensures that the secret gets loaded properly. */
+const webhook = () => {
   const secret = process.env["CLERK_WEBHOOK_SIGNING_SECRET"];
   if (!secret) {
     throw new Error("No webhook secret found!");
@@ -17,43 +18,70 @@ const webhookVerifier = () => {
   return new Webhook(secret);
 };
 
-const updateProfileOnLoginHandler = (
+const updateProfileOnLoginHandler = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
   if (req.method === "POST") {
     try {
-      const payload = webhookVerifier().verify(
+      const payload = webhook().verify(
         JSON.stringify(req.body),
         // ts ignore bc idk why not && how would I typesafe this??
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         req.headers
-      );
-      return res.status(200).json({ data: payload });
+      ) as WebhookPayload;
+
+      switch (payload.type) {
+        case "session.created": {
+          payload.data as SessionCreatedPayload;
+          return res
+            .status(200)
+            .json({ message: "Handler not implemented yet." });
+        }
+        case "user.created": {
+          const authorId = payload.data.id;
+
+          const newProfile = await prisma.profile.create({
+            data: {
+              authorId,
+              username: (payload.data as UserCreatedPayload).username,
+            },
+          });
+
+          return res
+            .status(200)
+            .json({ message: "Profile created!", profile: newProfile });
+        }
+        case "user.updated": {
+          const authorId = payload.data.id;
+
+          const newProfile = await prisma.profile.update({
+            where: {
+              authorId,
+            },
+            data: {
+              username: (payload.data as UserUpdatedPayload).username,
+            },
+          });
+
+          return res
+            .status(200)
+            .json({ message: "Profile updated!", profile: newProfile });
+        }
+        default: {
+          return res
+            .status(400)
+            .json({ message: "Event type not supported by API point." });
+        }
+      }
     } catch (cause) {
       // Another error occured
       console.error(cause);
       return res.status(500).json({ message: "Internal server error" });
     }
-  }
-
-  if (req.method === "GET") {
-    try {
-      const authorId = "123";
-      res.status(200).json({
-        message: `Profile for authorId: ${authorId} was successfully created!`,
-      });
-    } catch (cause) {
-      if (cause instanceof TRPCError) {
-        // An error from tRPC occured
-        const httpCode = getHTTPStatusCodeFromError(cause);
-        return res.status(httpCode).json(cause);
-      }
-      // Another error occured
-      console.error(cause);
-      res.status(500).json({ message: "Internal server error" });
-    }
+  } else {
+    return res.status(400).json({ message: "There is nothing here." });
   }
 };
 
