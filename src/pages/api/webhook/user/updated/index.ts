@@ -24,14 +24,14 @@ const updateProfileOnLoginHandler = (
     try {
       if (sId && sTimestamp && sSignature) {
         console.log({ sId, sTimestamp, sSignature });
-        res.status(200).json({ sId, sTimestamp, sSignature });
+        return res.status(200).json({ sId, sTimestamp, sSignature });
       }
       console.log(req.headers);
-      res.status(200).json("something happened");
+      return res.status(200).json("something happened");
     } catch (cause) {
       // Another error occured
       console.error(cause);
-      res.status(500).json({ message: "Internal server error" });
+      return res.status(500).json({ message: "Internal server error" });
     }
   }
 
