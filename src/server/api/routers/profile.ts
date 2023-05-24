@@ -5,6 +5,11 @@ import { TRPCError } from "@trpc/server";
 import { filterUserForClient } from "~/server/helpers/filterUserForClient";
 
 export const profileRouter = createTRPCRouter({
+  getClerkUsers: publicProcedure.query(async () => {
+    return (await clerkClient.users.getUserList()).map((user) =>
+      filterUserForClient(user)
+    );
+  }),
   getUserById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
@@ -59,6 +64,20 @@ export const profileRouter = createTRPCRouter({
 
       return userProfile;
     }),
+  getProfileImageById: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const [user] = await clerkClient.users.getUserList({
+        userId: [input.id],
+      });
+      if (!user) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "User not found.",
+        });
+      }
+      return filterUserForClient(user).profileImageUrl;
+    }),
   updateProfile: privateProcedure
     .input(
       z.object({
@@ -69,13 +88,9 @@ export const profileRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.profile.upsert({
+      await ctx.prisma.profile.update({
         where: { authorId: ctx.userId },
-        create: {
-          authorId: ctx.userId,
-          description: input.description || "",
-        },
-        update: {
+        data: {
           description: input.description,
         },
       });

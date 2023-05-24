@@ -20,6 +20,7 @@ import { LoadingSpinner } from "./ui/loading-spinner";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+
 interface UserProfileHeaderProps {
   username: string;
   user: RouterOutputs["profiles"]["getUserByUsername"];
@@ -94,14 +95,12 @@ export function UserProfileHeader({
           <Tabs defaultValue="following" className="w-[400px]">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="following">
-                {" "}
                 <p className="text-base hover:underline">
                   {followingCount}{" "}
                   <span className="text-xs text-foreground/50">following</span>
                 </p>
               </TabsTrigger>
               <TabsTrigger value="followers">
-                {" "}
                 <p className="text-base hover:underline">
                   {followedByCount}{" "}
                   <span className="text-xs text-foreground/50">followers</span>
@@ -116,7 +115,10 @@ export function UserProfileHeader({
                 <CardContent className="space-y-2">
                   {userProfile?.following.map((followingProfile) => (
                     <>
-                      <p>{followingProfile.authorId}</p>
+                      <Link href={`/@${followingProfile.username as string}`}>
+                        {followingProfile.username}
+                      </Link>
+                      <p>{followingProfile.description}</p>
                     </>
                   ))}
                 </CardContent>
@@ -131,7 +133,15 @@ export function UserProfileHeader({
                   {" "}
                   {userProfile?.followedBy.map((followedByProfile) => (
                     <>
-                      <p>{followedByProfile.authorId}</p>
+                      <Link
+                        href={`/@${followedByProfile.username as string}`}
+                        className="text-sm font-medium"
+                      >
+                        {followedByProfile.username}
+                      </Link>
+                      <p className="text-xs font-light">
+                        {followedByProfile.description}
+                      </p>
                     </>
                   ))}
                 </CardContent>
