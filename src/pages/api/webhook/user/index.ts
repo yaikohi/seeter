@@ -1,33 +1,36 @@
 import { TRPCError } from "@trpc/server";
 import { getHTTPStatusCodeFromError } from "@trpc/server/http";
 import { type NextApiRequest, type NextApiResponse } from "next";
-
+import { Webhook } from "svix";
 // const exampleHeaders = {
 //   "svix-id": "msg_p5jXN8AQM9LWM0D4loKWxJek",
 //   "svix-timestamp": "1614265330",
 //   "svix-signature": "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=",
 // };
 
+const webhookVerifier = () => {
+  const secret = process.env["CLERK_WEBHOOK_SIGNING_SECRET"];
+  if (!secret) {
+    throw new Error("No webhook secret found!");
+  }
+
+  return new Webhook(secret);
+};
+
 const updateProfileOnLoginHandler = (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
   if (req.method === "POST") {
-    // Create context and caller
-
-    const sId = req.headers["svix-id"];
-    const sTimestamp = req.headers["svix-timestamp"];
-    const sSignature = req.headers["svix-signature"];
-
-    // const caller = appRouter.createCaller(ctx);
-
     try {
-      if (sId && sTimestamp && sSignature) {
-        console.log({ sId, sTimestamp, sSignature });
-        return res.status(200).json({ sId, sTimestamp, sSignature });
-      }
-      console.log(req.headers);
-      return res.status(200).json("something happened");
+      const payload = webhookVerifier().verify(
+        JSON.stringify(req.body),
+        // ts ignore bc idk why not && how would I typesafe this??
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        req.headers
+      );
+      return res.status(200).json({ data: payload });
     } catch (cause) {
       // Another error occured
       console.error(cause);
