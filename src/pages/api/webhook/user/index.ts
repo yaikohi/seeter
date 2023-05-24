@@ -42,17 +42,22 @@ const updateProfileOnLoginHandler = async (
         case "user.created": {
           const authorId = payload.data.id;
 
-          const newProfile = await prisma.profile.create({
-            data: {
-              authorId,
-              username: (payload.data as UserCreatedPayload).username,
-            },
-          });
+          try {
+            const newProfile = await prisma.profile.create({
+              data: {
+                authorId,
+                username: (payload.data as UserCreatedPayload).username,
+              },
+            });
 
-          res
-            .status(200)
-            .json({ message: "Profile created!", profile: newProfile });
-          break;
+            res
+              .status(200)
+              .json({ message: "Profile created!", profile: newProfile });
+            break;
+          } catch (err) {
+            res.status(500).json({ error: err });
+            break;
+          }
         }
         case "user.updated": {
           const authorId = payload.data.id;

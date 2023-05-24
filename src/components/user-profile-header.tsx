@@ -17,7 +17,6 @@ import { toast } from "~/components/ui/use-toast";
 import React from "react";
 import { useUser } from "@clerk/nextjs";
 import { LoadingSpinner } from "./ui/loading-spinner";
-import { Profile } from "@prisma/client";
 interface UserProfileHeaderProps {
   username: string;
   user: RouterOutputs["profiles"]["getUserByUsername"];
@@ -64,7 +63,7 @@ export function UserProfileHeader({
 
   const profileIsFollowedByLoggedInUser =
     loggedInUser &&
-    (userProfile?.followedBy as Profile[]).filter(
+    (userProfile?.followedBy ).filter(
       (profile) => profile.authorId === loggedInUser.id
     ).length === 1;
   return (
