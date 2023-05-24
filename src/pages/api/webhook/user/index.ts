@@ -49,9 +49,10 @@ const updateProfileOnLoginHandler = async (
             },
           });
 
-          return res
+          res
             .status(200)
             .json({ message: "Profile created!", profile: newProfile });
+          break;
         }
         case "user.updated": {
           const authorId = payload.data.id;
@@ -65,14 +66,16 @@ const updateProfileOnLoginHandler = async (
             },
           });
 
-          return res
+          res
             .status(200)
             .json({ message: "Profile updated!", profile: newProfile });
+          break;
         }
         default: {
-          return res
+          res
             .status(400)
             .json({ message: "Event type not supported by API point." });
+          break;
         }
       }
     } catch (cause) {
