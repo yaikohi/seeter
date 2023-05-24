@@ -25,7 +25,7 @@ const updateProfileOnLoginHandler = (
       if (sId && sTimestamp && sSignature) {
         res.status(200).json({ sId, sTimestamp, sSignature });
       }
-      res.status(200).json({ headers: req.headers });
+      res.status(200).json({ message: req.headers });
     } catch (cause) {
       // Another error occured
       console.error(cause);
