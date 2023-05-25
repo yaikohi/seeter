@@ -47,6 +47,12 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        tint: {
+          yellow: "hsl(var(--accent-yellow))",
+          red: "hsl(var(--accent-red))",
+          blue: "hsl(var(--accent-blue))",
+          violet: "hsl(var(--accent-violet))",
+        },
       },
       borderRadius: {
         lg: `var(--radius)`,
@@ -54,7 +60,7 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["Inter",  ...fontFamily.sans],
+        sans: ["Inter", ...fontFamily.sans],
       },
       keyframes: {
         "accordion-down": {

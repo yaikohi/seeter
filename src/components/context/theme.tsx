@@ -26,7 +26,7 @@ export function ThemeContextProvider({
   const [theme, setTheme] = React.useState<Themes>(null);
 
   /** Handles initial render of the page.
-   * 
+   *
    * 1. Check user localStorage for theme -> set this as theme and end.
    * 2. Check for user browser preferences -> set this as theme and end.
    */
@@ -45,12 +45,13 @@ export function ThemeContextProvider({
     }
   }, [isClient]);
 
-
   /** Handles the state change / theme toggle button. */
   React.useEffect(() => {
     document.body.classList.remove("dark", "light");
     theme && localStorage.setItem("theme", theme);
-    document.body.classList.add(localStorage.getItem("theme") as 'light' | 'dark');
+    document.body.classList.add(
+      localStorage.getItem("theme") as "light" | "dark"
+    );
   }, [theme]);
 
   function toggleTheme(): void {

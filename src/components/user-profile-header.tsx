@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import Image from "next/image";
 import { type RouterOutputs } from "~/utils/api";
 import { api } from "~/utils/api";
@@ -17,9 +19,7 @@ import { toast } from "~/components/ui/use-toast";
 import React from "react";
 import { useUser } from "@clerk/nextjs";
 import { LoadingSpinner } from "./ui/loading-spinner";
-// import Link from "next/link";
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-// import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import type { Profile } from "@prisma/client";
 
 interface UserProfileHeaderProps {
   username: string;
@@ -60,16 +60,15 @@ export function UserProfileHeader({
   if (profileLoading) return <LoadingSpinner />;
   if (!userProfile) return <p>404</p>;
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-  const followingCount: number = userProfile?.following.length;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-  const followedByCount: number = userProfile?.followedBy.length;
+  const followingCount = userProfile?.following.length as number;
+  const followedByCount = userProfile?.followedBy.length as number;
 
   const profileIsFollowedByLoggedInUser =
     loggedInUser &&
-    (userProfile?.followedBy).filter(
-      (profile) => profile.authorId === loggedInUser.id
+    userProfile?.followedBy.filter(
+      (profile: Profile) => profile.authorId === loggedInUser.id
     ).length === 1;
+
   return (
     <div className="mx-auto flex w-full place-items-center justify-between gap-8 rounded-xl bg-background/30 p-8">
       <div className="flex flex-col gap-4">
@@ -94,16 +93,16 @@ export function UserProfileHeader({
           </div>
           <div className="flex gap-8">
             {/* <Link href={`/@${username}/following`}> */}
-              <p className="text-base hover:underline">
-                {followingCount}{" "}
-                <span className="text-xs text-foreground/50">following</span>
-              </p>
+            <p className="text-base hover:underline">
+              {followingCount}{" "}
+              <span className="text-xs text-foreground/50">following</span>
+            </p>
             {/* </Link> */}
             {/* <Link href={`/@${username}/followers`}> */}
-              <p className="text-base hover:underline">
-                {followedByCount}{" "}
-                <span className="text-xs text-foreground/50">followers</span>
-              </p>
+            <p className="text-base hover:underline">
+              {followedByCount}{" "}
+              <span className="text-xs text-foreground/50">followers</span>
+            </p>
             {/* </Link> */}
           </div>
         </div>
@@ -112,8 +111,8 @@ export function UserProfileHeader({
         <>
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant={"secondary"} className="rounded-full">
-                <Pencil className="h-4 w-4" />
+              <Button variant={"default"} className="rounded-xl">
+                <Pencil className="stroke-background" />
               </Button>
             </SheetTrigger>
             <SheetContent position="right" size="default">

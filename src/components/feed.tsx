@@ -53,9 +53,9 @@ export function ProfileFeed({ pageUser }: ProfileFeedProps) {
       {posts &&
         posts?.map((post) => {
           return (
-              <Seethe key={post.id} post={post} loggedInUser={loggedInUser}>
-                <SeetheDropdownMenu loggedInUser={loggedInUser} post={post} />
-              </Seethe>
+            <Seethe key={post.id} post={post} loggedInUser={loggedInUser}>
+              <SeetheDropdownMenu loggedInUser={loggedInUser} post={post} />
+            </Seethe>
           );
         })}
     </div>

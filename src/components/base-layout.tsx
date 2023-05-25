@@ -12,8 +12,8 @@ export const BaseLayout = (props: PropsWithChildren<object>) => {
     <>
       <main className="relative">
         <ThemeSwitcher />
-        <div className="absolute inset-0 -z-30 bg-gradient-to-tl from-muted via-blue-200 to-violet-100 blur-3xl dark:via-blue-900 dark:to-violet-900"></div>
-        <div className="z-100 m-8 mx-auto max-w-lg rounded-xl bg-background/40 px-0 py-2 shadow-2xl shadow-transparent backdrop-blur-3xl md:max-w-2xl md:px-4">
+        <div className="absolute inset-0 -z-30 bg-gradient-to-t from-primary-foreground/50 via-tint-blue/50 to-tint-violet/50 blur-[1000px]"></div>
+        <div className="z-100 m-8 mx-auto max-w-lg rounded-xl bg-background/80 px-0 py-2 shadow-2xl shadow-transparent backdrop-blur-3xl md:max-w-2xl md:px-4">
           <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
           <div className="my-12 flex w-full flex-col gap-8">
             <SignedOut>

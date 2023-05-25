@@ -2,7 +2,7 @@ import type { ComponentProps } from "react";
 import { api, type RouterOutputs } from "~/utils/api";
 import { intlFormatDistance } from "date-fns";
 import Link from "next/link";
-import { SignInButton, useUser } from "@clerk/nextjs";
+import { SignInButton, type useUser } from "@clerk/nextjs";
 import { LogIn, MoreHorizontal, Trash2, User } from "lucide-react";
 import {
   DropdownMenu,
@@ -13,7 +13,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 import type { filterUserForClient } from "~/server/helpers/filterUserForClient";
 import { toast } from "~/components/ui/use-toast";
-import { Button, buttonVariants } from "~/components/ui/button";
+import { buttonVariants } from "~/components/ui/button";
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -44,13 +44,13 @@ export function Seethe(props: SeetheProps) {
   } = props;
 
   return (
-    <div className="flex flex-col rounded-xl bg-background p-2 opacity-100 transition-all duration-100 ease-in-out hover:bg-background sm:bg-background/60">
+    <div className="flex flex-col rounded-xl bg-background p-2 hover:bg-background sm:bg-background/60">
       <div className="flex place-items-center justify-between gap-2 px-2 py-1 text-sm">
         <div className="flex place-items-center gap-2">
           <h3 className="text-base font-bold">{username as string}</h3>
           <Link
             href={`/@${username as string}`}
-            className="text-smfont-light tracking-tight hover:underline"
+            className="text-sm tracking-tight hover:underline"
           >{`@${username as string}`}</Link>
           <span className="font-light">·</span>
           <span className="font-light">
@@ -95,7 +95,7 @@ export const LoggedInUserOwnsSeethe = ({
   post,
 }: LoggedInUserOwnsSeetheProps) => {
   const ctx = api.useContext();
-  const pageUser = useRouter().asPath.replace("/@", "")
+  const pageUser = useRouter().asPath.replace("/@", "");
 
   const loggedInUserOwnsProfile =
     loggedInUser && loggedInUser.username === pageUser;
@@ -127,7 +127,10 @@ export const LoggedInUserOwnsSeethe = ({
   return (
     <AlertDialog>
       <DropdownMenu>
-        <DropdownMenuTrigger aria-label="Open seethe options" title="Seethe options">
+        <DropdownMenuTrigger
+          aria-label="Open seethe options"
+          title="Seethe options"
+        >
           <MoreHorizontal />
         </DropdownMenuTrigger>
         <DropdownMenuContent side={"left"}>

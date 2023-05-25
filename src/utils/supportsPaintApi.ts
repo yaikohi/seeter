@@ -9,4 +9,5 @@
  *
  * eslint-disable-next-line @typescript-eslint/ban-ts-comment
  * @ts-ignore: CSS.paintWorklet DOES exist!*/
-export const supportsPaintApi = typeof window !== 'undefined' && CSS.paintWorklet as boolean;
+export const supportsPaintApi =
+  typeof window !== "undefined" && (CSS.paintWorklet as boolean);

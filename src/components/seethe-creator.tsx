@@ -67,7 +67,7 @@ export function SeetheCreator({ hideAvatar }: SeetheCreatorProps) {
             <div className="flex gap-2">{/* Icons can be put here */}</div>
             <Button
               disabled={input === "" || input.length > 100}
-              className="max-w-[72px] rounded-full"
+              className="rounded-xl"
               variant={isPosting ? "loading" : "default"}
               onClick={() => mutate({ content: input })}
             >
