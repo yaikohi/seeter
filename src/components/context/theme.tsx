@@ -1,7 +1,7 @@
 import React from "react";
 import useIsClient from "./client";
 
-type Themes = "light" | "dark";
+type Themes = "light" | "dark" | null;
 
 interface ThemeContextProps {
   theme: Themes;
@@ -9,7 +9,7 @@ interface ThemeContextProps {
 }
 
 const ThemeContext = React.createContext<ThemeContextProps>({
-  theme: "light",
+  theme: "dark",
   toggleTheme: () => {
     //empty
   },
@@ -23,30 +23,34 @@ export function ThemeContextProvider({
   children,
 }: ThemeContextProviderProps): React.ReactElement {
   const isClient = useIsClient();
+  const [theme, setTheme] = React.useState<Themes>(null);
 
-  const [theme, setTheme] = React.useState<Themes>("light");
-  
-  const isLocalStorageEmpty = isClient && !localStorage.getItem("theme");
-
+  /** Handles initial render of the page.
+   * 
+   * 1. Check user localStorage for theme -> set this as theme and end.
+   * 2. Check for user browser preferences -> set this as theme and end.
+   */
   React.useEffect(() => {
+    const isLocalStorageEmpty = isClient && !localStorage.getItem("theme");
+
     const userBrowserPreferredTheme =
       isClient && window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light";
 
-    if (isLocalStorageEmpty) {
-      localStorage.setItem("theme", userBrowserPreferredTheme);
-    } else {
+    if (!isLocalStorageEmpty) {
       setTheme(localStorage.getItem("theme") as Themes);
+    } else {
+      localStorage.setItem("theme", userBrowserPreferredTheme);
     }
-  }, [isClient, isLocalStorageEmpty]);
+  }, [isClient]);
 
+
+  /** Handles the state change / theme toggle button. */
   React.useEffect(() => {
     document.body.classList.remove("dark", "light");
-
-    localStorage.setItem("theme", theme);
-    /** The type is asserted because we add the theme to `localStorage` one line above here so we know it exists. */
-    document.body.classList.add(localStorage.getItem("theme") as Themes);
+    theme && localStorage.setItem("theme", theme);
+    document.body.classList.add(localStorage.getItem("theme") as 'light' | 'dark');
   }, [theme]);
 
   function toggleTheme(): void {
