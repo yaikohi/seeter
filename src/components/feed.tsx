@@ -1,4 +1,3 @@
-import { Fade } from "react-awesome-reveal";
 import { type RouterOutputs, api } from "~/utils/api";
 
 import { Seethe, SeetheDropdownMenu } from "./seethe";
@@ -23,11 +22,9 @@ export function MainFeed() {
       {posts &&
         posts?.map((post) => {
           return (
-            <Fade key={post.id} damping={20}>
-              <Seethe post={post} loggedInUser={loggedInUser}>
-                <SeetheDropdownMenu loggedInUser={loggedInUser} post={post} />
-              </Seethe>
-            </Fade>
+            <Seethe post={post} loggedInUser={loggedInUser} key={post.id}>
+              <SeetheDropdownMenu loggedInUser={loggedInUser} post={post} />
+            </Seethe>
           );
         })}
     </div>
@@ -56,11 +53,9 @@ export function ProfileFeed({ pageUser }: ProfileFeedProps) {
       {posts &&
         posts?.map((post) => {
           return (
-            <Fade key={post.id} damping={20}>
-              <Seethe post={post} loggedInUser={loggedInUser}>
+              <Seethe key={post.id} post={post} loggedInUser={loggedInUser}>
                 <SeetheDropdownMenu loggedInUser={loggedInUser} post={post} />
               </Seethe>
-            </Fade>
           );
         })}
     </div>
