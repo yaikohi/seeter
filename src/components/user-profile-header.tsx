@@ -17,9 +17,9 @@ import { toast } from "~/components/ui/use-toast";
 import React from "react";
 import { useUser } from "@clerk/nextjs";
 import { LoadingSpinner } from "./ui/loading-spinner";
-import Link from "next/link";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+// import Link from "next/link";
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+// import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 interface UserProfileHeaderProps {
   username: string;
@@ -92,76 +92,20 @@ export function UserProfileHeader({
               </p>
             )}
           </div>
-          <Tabs defaultValue="following" className="w-[400px]">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="following">
-                <p className="text-base hover:underline">
-                  {followingCount}{" "}
-                  <span className="text-xs text-foreground/50">following</span>
-                </p>
-              </TabsTrigger>
-              <TabsTrigger value="followers">
-                <p className="text-base hover:underline">
-                  {followedByCount}{" "}
-                  <span className="text-xs text-foreground/50">followers</span>
-                </p>
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="following">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Following</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  {userProfile?.following.map((followingProfile) => (
-                    <>
-                      <Link href={`/@${followingProfile.username as string}`}>
-                        {followingProfile.username}
-                      </Link>
-                      <p>{followingProfile.description}</p>
-                    </>
-                  ))}
-                </CardContent>
-              </Card>
-            </TabsContent>
-            <TabsContent value="followers">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Followers</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  {" "}
-                  {userProfile?.followedBy.map((followedByProfile) => (
-                    <>
-                      <Link
-                        href={`/@${followedByProfile.username as string}`}
-                        className="text-sm font-medium"
-                      >
-                        {followedByProfile.username}
-                      </Link>
-                      <p className="text-xs font-light">
-                        {followedByProfile.description}
-                      </p>
-                    </>
-                  ))}
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-          {/* <div className="flex gap-8">
-            <Link href={`/@${username}/following`}>
+          <div className="flex gap-8">
+            {/* <Link href={`/@${username}/following`}> */}
               <p className="text-base hover:underline">
                 {followingCount}{" "}
                 <span className="text-xs text-foreground/50">following</span>
               </p>
-            </Link>
-            <Link href={`/@${username}/followers`}>
+            {/* </Link> */}
+            {/* <Link href={`/@${username}/followers`}> */}
               <p className="text-base hover:underline">
                 {followedByCount}{" "}
                 <span className="text-xs text-foreground/50">followers</span>
               </p>
-            </Link>
-          </div> */}
+            {/* </Link> */}
+          </div>
         </div>
       </div>
       {loggedInUserOwnsProfile && (
