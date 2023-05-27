@@ -69,6 +69,8 @@ const updateProfileOnLoginHandler = async (
             },
             data: {
               username: (payload.data as UserUpdatedPayload).username,
+              profileImageUrl: (payload.data as UserUpdatedPayload)
+                .profile_image_url,
             },
           });
 
