@@ -35,9 +35,8 @@ const updateProfileOnLoginHandler = async (
       switch (payload.type) {
         case "session.created": {
           payload.data as SessionCreatedPayload;
-          return res
-            .status(200)
-            .json({ message: "Handler not implemented yet." });
+          res.status(200).json({ message: "Handler not implemented yet." });
+          break;
         }
         case "user.created": {
           const authorId = payload.data.id;
