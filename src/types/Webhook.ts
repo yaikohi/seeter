@@ -45,7 +45,7 @@ export interface UserUpdatedPayload {
   primary_phone_number_id: any;
   primary_web3_wallet_id: any;
   private_metadata: object;
-  profile_image_url: string;
+  profile_image_url: string | undefined;
   public_metadata: object;
   two_factor_enabled: boolean;
   unsafe_metadata: object;

@@ -7,10 +7,6 @@ generator client {
 
 datasource db {
     provider     = "mysql"
-    // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
     url          = env("DATABASE_URL")
     relationMode = "prisma"
 }
@@ -19,24 +15,21 @@ model Post {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     authorId  String
-
-    content String @db.VarChar(255)
+    content   String   @db.VarChar(255)
 
     @@index([authorId])
 }
 
 model Profile {
-    id        String   @id @default(cuid())
-    authorId  String   @unique
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    username String
-
-    description String? @db.VarChar(255)
-
-    followedBy Profile[] @relation("UserFollows")
-    following  Profile[] @relation("UserFollows")
+    id              String    @id @default(cuid())
+    authorId        String    @unique
+    createdAt       DateTime  @default(now())
+    updatedAt       DateTime  @updatedAt
+    username        String
+    profileImageUrl String?
+    description     String?   @db.VarChar(255)
+    followedBy      Profile[] @relation("UserFollows")
+    following       Profile[] @relation("UserFollows")
 
     @@index([authorId])
 }
