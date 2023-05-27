@@ -46,6 +46,8 @@ const updateProfileOnLoginHandler = async (
               data: {
                 authorId,
                 username: (payload.data as UserCreatedPayload).username,
+                profileImageUrl: (payload.data as UserCreatedPayload)
+                  .profile_image_url,
               },
             });
 
