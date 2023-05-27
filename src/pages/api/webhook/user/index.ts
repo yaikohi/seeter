@@ -84,7 +84,6 @@ const updateProfileOnLoginHandler = async (
         }
       }
     } catch (cause) {
-      // Another error occured
       console.error(cause);
       return res.status(500).json({ message: "Internal server error" });
     }
