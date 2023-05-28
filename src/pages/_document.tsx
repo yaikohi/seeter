@@ -4,6 +4,7 @@ export default function Document() {
   return (
     <Html>
       <Head>
+        <meta charSet="utf-8"></meta>
         <meta name="description" content="twitter but seeter" />
         <link rel="icon" href="/favicon.ico" />
         <link
