@@ -44,7 +44,6 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
           {"'"}s profile
         </title>
         <meta name="description" content="user seeter profile" />
-        <link rel="icon" href="/favicon.ico" />
       </Head>
       <BaseLayout>
         <div className="relative flex w-full flex-col gap-8">
