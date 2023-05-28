@@ -1,7 +1,6 @@
 import React from "react";
 import { type NextPage } from "next";
 import Head from "next/head";
-import { LoadingPage } from "~/components/loading-page";
 import { BaseLayout } from "~/components/base-layout";
 import { MainFeed } from "~/components/feed";
 import { SeetheCreator } from "~/components/seethe-creator";
