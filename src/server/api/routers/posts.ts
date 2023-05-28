@@ -22,7 +22,7 @@ const ratelimit = new Ratelimit({
 export const postsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     const posts = await ctx.prisma.post.findMany({
-      take: 100,
+      take: 20,
       orderBy: {
         createdAt: "desc",
       },
@@ -30,7 +30,7 @@ export const postsRouter = createTRPCRouter({
 
     const users = await clerkClient.users.getUserList({
       userId: posts.map((post) => post.authorId),
-      limit: 100,
+      limit: 20,
     });
 
     const postsWithUsernames = posts.map((post) => {
